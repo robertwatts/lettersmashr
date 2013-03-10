@@ -3,6 +3,7 @@ require 'mongoid'
 class PhotoLetter
   include Mongoid::Document
 
+  field :flickr_id, :type => Integer
   field :letter, :type => String
   field :capital, :type => boolean
   field :originalFormat, :type => String
