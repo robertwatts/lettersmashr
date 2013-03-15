@@ -5,12 +5,11 @@ class Analyzer
   # Construct with a flick raw photo object
   def initialize(photo)
     @photo = photo
-    @letter = letter()
+    @letter = determine_letter()
   end
 
   # Determine the letter
-  private def letter
-
+  private def determine_letter
 
   end
 
