@@ -3,6 +3,8 @@ flickr:
   sharedSecret: c041f8188aa39723
   token: 72157632948133483-71b008804daa9070
   secret: 08df7bb390fbc4fd
+import:
+  last-run:
 
 
 
