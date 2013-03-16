@@ -2,17 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3b05d986-aea3-47f6-bc3f-f737d278e98c" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/test/importer_test.rb" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/import/analyzer.rb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/import/authenticate.rb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/import/flickr_api.rb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/import/import.rb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/import_test.rb" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/lib/import/one_letter_group_pool.rb" afterPath="$PROJECT_DIR$/lib/importer.rb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/.rakeTasks" afterPath="$PROJECT_DIR$/.idea/.rakeTasks" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config/import.yml" afterPath="$PROJECT_DIR$/config/import.yml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/models/photo_letter.rb" afterPath="$PROJECT_DIR$/lib/models/photo_letter.rb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/importer_test.rb" afterPath="$PROJECT_DIR$/test/importer_test.rb" />
     </list>
     <ignored path="lettersmashr.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -40,7 +30,7 @@
     <file path="/import.yml" changelist="3b05d986-aea3-47f6-bc3f-f737d278e98c" time="1363409950752" ignored="false" />
     <file path="/Rakefile" changelist="3b05d986-aea3-47f6-bc3f-f737d278e98c" time="1363410200925" ignored="false" />
     <file path="/authenticate.rb" changelist="3b05d986-aea3-47f6-bc3f-f737d278e98c" time="1363470767711" ignored="false" />
-    <file path="/importer_test.rb" changelist="3b05d986-aea3-47f6-bc3f-f737d278e98c" time="1363472422372" ignored="false" />
+    <file path="/importer_test.rb" changelist="3b05d986-aea3-47f6-bc3f-f737d278e98c" time="1363478209188" ignored="false" />
     <file path="/importer.rb" changelist="3b05d986-aea3-47f6-bc3f-f737d278e98c" time="1363477980767" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -66,25 +56,7 @@
       <file leaf-file-name="importer.rb" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/importer.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="95" column="13" selection-start="2216" selection-end="3355" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="app.rb" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app.rb">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="4" selection-start="139" selection-end="139" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="photo_letter.rb" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lib/models/photo_letter.rb">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="6" column="3" selection-start="100" selection-end="100" vertical-scroll-proportion="0.0">
+            <state line="76" column="15" selection-start="2548" selection-end="2548" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -102,7 +74,7 @@
       <file leaf-file-name="importer_test.rb" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/test/importer_test.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="10" selection-start="161" selection-end="161" vertical-scroll-proportion="0.13981359">
+            <state line="7" column="15" selection-start="171" selection-end="171" vertical-scroll-proportion="0.13981359">
               <folding />
             </state>
           </provider>
@@ -139,9 +111,9 @@
         <option value="$PROJECT_DIR$/lib/import/flickr_api.rb" />
         <option value="$PROJECT_DIR$/lib/import/analyzer.rb" />
         <option value="$PROJECT_DIR$/lib/import/authenticate.rb" />
-        <option value="$PROJECT_DIR$/test/importer_test.rb" />
         <option value="$PROJECT_DIR$/lib/importer.rb" />
         <option value="$PROJECT_DIR$/lib/models/photo_letter.rb" />
+        <option value="$PROJECT_DIR$/test/importer_test.rb" />
       </list>
     </option>
   </component>
@@ -735,27 +707,6 @@
         <state line="6" column="3" selection-start="137" selection-end="137" vertical-scroll-proportion="0.11984021" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/importer.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="95" column="13" selection-start="2216" selection-end="3355" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="4" selection-start="139" selection-end="139" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/models/photo_letter.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="3" selection-start="100" selection-end="100" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/config/mongoid.yml">
       <provider selected="true" editor-type-id="text-editor">
         <state line="5" column="25" selection-start="100" selection-end="100" vertical-scroll-proportion="0.0">
@@ -763,9 +714,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/lib/models/photo_letter.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="3" selection-start="100" selection-end="100" vertical-scroll-proportion="0.11984021">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="4" selection-start="139" selection-end="139" vertical-scroll-proportion="0.13981359">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/importer.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="76" column="15" selection-start="2548" selection-end="2548" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/test/importer_test.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="10" selection-start="161" selection-end="161" vertical-scroll-proportion="0.13981359">
+        <state line="7" column="15" selection-start="171" selection-end="171" vertical-scroll-proportion="0.13981359">
           <folding />
         </state>
       </provider>
