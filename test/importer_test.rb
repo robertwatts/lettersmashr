@@ -1,11 +1,17 @@
-require 'minitest/spec'
-require 'minitest/autorun'
-require_relative '../lib/importer'
+require File.dirname(__FILE__) +  '/test_helper'
+require File.dirname(__FILE__) +  '/../lib/importer'
 
-describe Importer do
-  it 'can import photos' do
-    Importer.import
-    assert true
+class ImporterTest < MiniTest::Unit::TestCase
+
+  def setup
+    @importer = Importer.new
   end
-end
 
+  def test_last_import_record
+    assert @importer.last_import_record, 'Cannot determine last record'
+    puts 'Found last record' + @importer.last_import_record.to_s
+  end
+
+
+
+end
