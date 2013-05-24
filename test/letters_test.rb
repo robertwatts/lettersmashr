@@ -25,7 +25,7 @@ class LettersTest < MiniTest::Unit::TestCase
   end
 
   # Add new photo letter, delete and ensure deletion
-  def test_create_delete
+  def test_save_exists_delete
     puts 'Creating test photo: ' + @test_photo_letter_data[:flickr_id].to_s
     @letters.save(@test_photo_letter_data)
     assert @letters.exists?(@test_photo_letter_data[:flickr_id]), 'PhotoLetter was not created'
