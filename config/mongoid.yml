@@ -1,13 +1,7 @@
-
-development:
+production:
   sessions:
     default:
-      database: lettersmashr_dev
-      hosts:
-        - localhost:27017
-test:
-  sessions:
-    default:
-      database: lettersmashr_test
-      hosts:
-        - localhost:27017
+      uri: <%= ENV['MONGOHQ_URL'] %>
+      options:
+        skip_version_check: true
+        safe: true

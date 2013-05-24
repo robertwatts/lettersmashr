@@ -1,10 +1,19 @@
-require 'configurability'
+require 'resque/errors'
 require 'flickraw'
 require 'mongoid'
 require_relative 'models/photo_letter'
 
+module RetriedJob
+  def on_failure_retry(e, *args)
+    puts "Performing #{self} caused an exception (#{e}). Retrying..."
+    $stdout.flush
+    Resque.enqueue self, *args
+  end
+end
+
 # Manages access to Importer API
-class Importer
+class Import extend RetriedJob
+  @queue = :import
 
   # Add a new PhotoLetter to the store
   def initialize
@@ -35,7 +44,15 @@ class Importer
 
     # Abort if not found
     abort('Unable to find One Letter group, exiting') if @letter_pool.nil?
+
+    puts "Successfully initialized import worker instance"
   end
+
+  def self.perform
+        import
+    rescue Resque::TermException
+      Resque.enqueue(self)
+    end
 
   def last_import_record
     ImportRecord.order_by([:started_at, :desc]).limit(1).first
