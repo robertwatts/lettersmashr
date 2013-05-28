@@ -1,0 +1,5 @@
+import:
+  cron: 0 */3 * * *
+  class: Import
+  args:
+  description: Run an import every 3hrs

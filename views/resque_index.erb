@@ -1,14 +1,18 @@
 <meta http-equiv="Refresh" content="3">
 <h1><a href="/resque">Resque Dashboard</a></h1>
-<h1><%= @local_uploads %> local uploads, <%= @s3_originals %> S3 originals, <%= @s3_watermarked %> watermarked.</h1>
+<h1><%= @import_count_key %> import runs</h1>
 
 <% unless @working.length == 0 %>
   <h2>Import in progress...</h2>
 <% end %>
 
-<h2>Most recent update</h2>
+<h2>Most recent import stats:</h2>
 <ul>
-  <% @watermarked_urls.each do |url| %>
-    <li><a href="<%= url %>"><%= url %></a></li>
-  <% end %>
+  <li>Started at: <%= @most_recent_started_at_key %></li>
+  <li>Ended at: <%= @most_recent_ended_at_key %></li>
+  <li>Success: <%= @most_recent_success_key %></li>
+  <li>Duration: <%= @most_recent_duration_key %></li>
+  <li>Photos created: <%= @most_recent_created_key %></li>
+  <li>Photos modified: <%= @most_recent_modified_key %></li>
+  <li>Photos deleted: <%= @most_recent_deleted_key %></li>
 </ul>

@@ -1,14 +1,8 @@
 require 'mongoid'
-require 'models/photo_letter'
+require File.expand_path('../models/photo_letter', __FILE__)
 
 # Letters manager that stores and queries and returns PhotoLetter objects
 class Letters
-
-  def initialize
-    # Setup Mongoid
-    puts 'Initializing Mongoid ' + ENV['RACK_ENV']
-    Mongoid.load!(File.dirname(__FILE__) + '/../config/mongoid.yml')
-  end
 
   # Saves a PhotoLetter.  Will create a new one or update an existing one
   #
