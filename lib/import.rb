@@ -18,7 +18,6 @@ class Import
     # Setup and authenticate FlickrAPI using FlickrRaw
     FlickRaw.api_key = ENV['FLICKR_APP_KEY']
     FlickRaw.shared_secret = ENV['FLICKR_SHARED_SECRET']
-    FlickRaw.timeout = 30
     flickr.access_token = ENV['FLICKR_TOKEN']
     flickr.access_secret = ENV['FLICKR_SECRET']
     puts "You are now authenticated as #{flickr.test.login.username}"

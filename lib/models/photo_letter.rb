@@ -2,7 +2,6 @@ require 'mongoid'
 
 class PhotoLetter
   include Mongoid::Document
-  store_in collection: "lettersmashr"
 
   # Custom id field: use flickr_id
   field :_id, type: Integer, default: ->{ flickr_id }
