@@ -5,7 +5,7 @@ require File.expand_path('../letters', __FILE__)
 # Manages access to Importer API
 class Import
   extend Resque::Plugins::ConcurrentRestriction
-  concurrent 1
+  concurrent 1  # Only allow Import to have one resque worker
 
   @queue = :import
 
