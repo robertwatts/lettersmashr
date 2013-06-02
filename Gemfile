@@ -3,6 +3,7 @@ ruby "1.9.3"
 gem 'rake'
 gem 'sinatra'
 gem 'resque', '~> 1.22.0'
+gem 'resque-concurrent-restriction'
 gem 'resque-scheduler'
 gem 'flickraw'
 gem 'configurability'

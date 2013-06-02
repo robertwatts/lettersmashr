@@ -2,17 +2,11 @@ require 'resque/errors'
 require 'flickraw'
 require File.expand_path('../letters', __FILE__)
 
-module RetriedJob
-  def on_failure_retry(e, *args)
-    puts "Performing #{self} caused an exception (#{e}). Retrying..."
-    $stdout.flush
-    Resque.enqueue self, *args
-  end
-end
-
 # Manages access to Importer API
 class Import
-  extend RetriedJob
+  extend Resque::Plugins::ConcurrentRestriction
+  concurrent 1
+
   @queue = :import
 
   # Add a new PhotoLetter to the store
@@ -22,10 +16,10 @@ class Import
     @letters = Letters.new
 
     # Setup and authenticate FlickrAPI using FlickrRaw
-    FlickRaw.api_key = ENV["FLICKR_APP_KEY"]
-    FlickRaw.shared_secret= ENV["FLICKR_SHARED_SECRET"]
-    flickr.access_token = ENV["FLICKR_TOKEN"]
-    flickr.access_secret = ENV["FLICKR_SECRET"]
+    FlickRaw.api_key = ENV['FLICKR_APP_KEY']
+    FlickRaw.shared_secret= ENV['FLICKR_SHARED_SECRET']
+    flickr.access_token = ENV['FLICKR_TOKEN']
+    flickr.access_secret = ENV['FLICKR_SECRET']
     puts "You are now authenticated as #{flickr.test.login.username}"
 
     # Find the "One Letter" group from the Flickr API user's group pool list
