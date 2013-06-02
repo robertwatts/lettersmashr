@@ -5,7 +5,7 @@ require File.expand_path('../letters', __FILE__)
 # Manages access to Importer API
 class Import
   extend Resque::Plugins::ConcurrentRestriction
-  concurrent 1  # Only allow Import to have one resque worker
+  concurrent 1  # Only allow Import to have one worker
 
   @queue = :import
 
@@ -17,7 +17,8 @@ class Import
 
     # Setup and authenticate FlickrAPI using FlickrRaw
     FlickRaw.api_key = ENV['FLICKR_APP_KEY']
-    FlickRaw.shared_secret= ENV['FLICKR_SHARED_SECRET']
+    FlickRaw.shared_secret = ENV['FLICKR_SHARED_SECRET']
+    FlickRaw.timeout = 30
     flickr.access_token = ENV['FLICKR_TOKEN']
     flickr.access_secret = ENV['FLICKR_SECRET']
     puts "You are now authenticated as #{flickr.test.login.username}"
@@ -77,14 +78,14 @@ class Import
     import_modified = 0
     import_deleted = 0
 
-    page_count = @letter_pool.photos.to_i / 250 + 1
+    page_count = @letter_pool.photos.to_i / 100 + 1
     begin
       # Analyze every photo in the pool, only importing what is required
       1.upto(page_count) do |page|
         puts "Processing page #{page} of #{page_count}"
 
         flickr.groups.pools.getPhotos(
-            :group_id => @letter_pool.nsid, per_page: 250,
+            :group_id => @letter_pool.nsid, per_page: 100,
             :page => page,
             :extras=> 'last_update,tags,license,url_sq,url_t,url_s,url_q').each do |photo|
           analyzer = PhotoAnalyzer.new(photo, last_update, @letters)
