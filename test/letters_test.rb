@@ -5,7 +5,6 @@ require File.dirname(__FILE__) +  '/../lib/models/photo_letter'
 class LettersTest < MiniTest::Unit::TestCase
 
   def setup
-    @letters = Letters.new
     @test_photo_letter_data = {
         char: 'a',
         tags: %w(tag1 tag2),
@@ -24,14 +23,23 @@ class LettersTest < MiniTest::Unit::TestCase
     PhotoLetter.delete_all
   end
 
+  def test_insert_new
+  end
+
+  def test_save_existing
+  end
+
+  def delete
+  end
+
   # Add new photo letter, delete and ensure deletion
   def test_save_exists_delete
     puts 'Creating test photo: ' + @test_photo_letter_data[:flickr_id].to_s
-    @letters.save(@test_photo_letter_data)
-    assert @letters.exists?(@test_photo_letter_data[:flickr_id]), 'PhotoLetter was not created'
+    Letters.save(@test_photo_letter_data)
+    assert Letters.exists?(@test_photo_letter_data[:flickr_id]), 'PhotoLetter was not created'
 
     puts 'Deleting test photo: ' + @test_photo_letter_data[:flickr_id].to_s
-    @letters.delete(@test_photo_letter_data[:flickr_id])
-    assert !@letters.exists?(@test_photo_letter_data[:flickr_id]), 'PhotoLetter could not be deleted'
+    Letters.delete(@test_photo_letter_data[:flickr_id])
+    assert !Letters.exists?(@test_photo_letter_data[:flickr_id]), 'PhotoLetter could not be deleted'
   end
 end

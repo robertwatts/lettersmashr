@@ -12,6 +12,9 @@ gem 'json', '~> 1.7.7'
 gem 'sinatra-redis'
 
 group :test do
-  gem 'rspec'
-  gem 'rack-test'
+  gem 'minitest'
+end
+
+group :cli do
+  gem 'foreman'
 end

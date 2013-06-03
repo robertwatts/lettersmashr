@@ -1,5 +1,6 @@
-# test_helper.rb
-require 'minitest/spec'
 require 'minitest/autorun'
+Bundler.require(:default, :test)
 
-ENV['RACK_ENV'] = 'test'
+# Set up Mongoid
+puts 'Initializing Mongoid ' + ENV['RACK_ENV']
+Mongoid.load!(File.dirname(__FILE__) + '/../config/mongoid.yml')

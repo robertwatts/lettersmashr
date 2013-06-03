@@ -12,9 +12,6 @@ class Import
   # Add a new PhotoLetter to the store
   def initialize
 
-    # Setup the Letter instance that persists new objects
-    @letters = Letters.new
-
     # Setup and authenticate FlickrAPI using FlickrRaw
     FlickRaw.api_key = ENV['FLICKR_APP_KEY']
     FlickRaw.shared_secret = ENV['FLICKR_SHARED_SECRET']
@@ -87,15 +84,15 @@ class Import
             :group_id => @letter_pool.nsid, per_page: 100,
             :page => page,
             :extras=> 'last_update,tags,license,url_sq,url_t,url_s,url_q').each do |photo|
-          analyzer = PhotoAnalyzer.new(photo, last_update, @letters)
+          analyzer = PhotoAnalyzer.new(photo, last_update)
 
 
-          if analyzer.should_delete      # Delete photo
-            @letters.delete(photo.id)
+          if analyzer.delete      # Delete photo
+            Letters.delete(photo.id)
             import_deleted += 1
             puts "Deleted photo #{photo.id}"
-          elsif analyzer.should_import   # Save the photo (create or update)
-            @letters.save(
+          elsif analyzer.import   # Save the photo (create or update)
+            Letters.save(
                 _id: photo.id,
                 char: analyzer.char,
                 tags: analyzer.tags,
@@ -181,7 +178,7 @@ class Import
   # 3) Determines colors
   # 4) Determines any other tags that might be interesting
   class PhotoAnalyzer
-    attr_reader :char, :tags, :exists, :should_delete, :should_import
+    attr_reader :char, :tags, :exists, :delete, :import
 
     class << self
       # Load the list of Flickr tags to ignore on import
@@ -190,13 +187,13 @@ class Import
     end
 
     # Construct with a flick raw photo object
-    def initialize(photo, last_update,letters)
+    def initialize(photo, last_update)
       @last_update = last_update
 
       @valid_license = photo.license.to_i.between?(1,2) || photo.license.to_i.between?(4,5) || photo.license.to_i > 6
-      @exists = letters.exists?(photo.id)
-      @should_import = @valid_license && !@char.nil? && Time.at(photo.lastupdate.to_i).to_datetime >= @last_update
-      @should_delete = @exists && !@should_import
+      @exists = Letters.exists?(photo.id)
+      @import = @valid_license && !@char.nil? && Time.at(photo.lastupdate.to_i).to_datetime >= @last_update
+      @delete = @exists && !@import
 
       @tags = []
       @char = nil

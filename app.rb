@@ -1,8 +1,6 @@
-require 'bundler/setup'
+require 'bundler'
 Bundler.require(:default)
 require File.expand_path('../lib/import', __FILE__)
-require 'sinatra/redis'
-require 'resque_scheduler'
 
 configure do
   puts "Initializing redis " + ENV["REDISTOGO_URL"]

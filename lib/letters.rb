@@ -7,21 +7,21 @@ class Letters
   # Saves a PhotoLetter.  Will create a new one or update an existing one
   #
   # @param args [Map] the photo letter values
-  def save(args = {})
+  def self.save(args = {})
     PhotoLetter.new(args).save!
   end
 
   # Remove an existing PhotoLetter from the store
   #
   # @param photo_letter_id [Integer] the photo letter id
-  def delete(photo_letter_id)
+  def self.delete(photo_letter_id)
     PhotoLetter.delete_all(_id: photo_letter_id)
   end
 
   # Checks whether a PhotoLetter exists
   #
   # @param photo_letter_id [Integer] the photo letter id
-  def exists?(photo_letter_id)
+  def self.exists?(photo_letter_id)
     PhotoLetter.where(_id: photo_letter_id).exists?
   end
 

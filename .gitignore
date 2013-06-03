@@ -2,4 +2,5 @@
 .env.workstation
 .env.staging
 .env.production
+.env.test
 .rvmrc

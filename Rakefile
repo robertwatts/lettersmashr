@@ -1,11 +1,11 @@
+require 'rake'
 require 'rake/testtask'
-require 'bundler/setup'
-Bundler.require(:default)
-
-require './app'
-require 'resque/tasks'
+require 'bundler'
+Bundler.setup(:default, :test)
 
 task "resque:setup" do
+  require './app'
+  require 'resque/tasks'
   ENV['QUEUE'] = '*'
 end
 
@@ -14,3 +14,4 @@ Rake::TestTask.new do |t|
   t.test_files = FileList['test/*_test.rb']
   t.verbose = true
 end
+
