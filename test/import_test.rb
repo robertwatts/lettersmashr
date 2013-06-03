@@ -4,7 +4,6 @@ require File.dirname(__FILE__) +  '/../lib/import'
 class ImportTest < MiniTest::Unit::TestCase
 
  def setup
-    @letters = Letters.new
     @test_photo_letter_data = {
         char: 'a',
         tags: %w(tag1 tag2),

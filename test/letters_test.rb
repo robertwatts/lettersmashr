@@ -1,6 +1,5 @@
 require File.dirname(__FILE__) +  '/test_helper'
 require File.dirname(__FILE__) +  '/../lib/letters'
-require File.dirname(__FILE__) +  '/../lib/models/photo_letter'
 
 class LettersTest < MiniTest::Unit::TestCase
 
@@ -20,13 +19,14 @@ class LettersTest < MiniTest::Unit::TestCase
   end
 
   def teardown
-    PhotoLetter.delete_all
+    Letters::PhotoLetter.delete_all
   end
 
   def test_insert_new
     puts 'Creating test photo: ' + @test_photo_letter_data[:flickr_id].to_s
     Letters.save(@test_photo_letter_data)
     assert Letters.exists?(@test_photo_letter_data[:flickr_id]), 'PhotoLetter was not created'
+    assert Letters::PhotoLetter.find(@test_photo_letter_data[:flickr_id]).char == @test_photo_letter_data[:char]
   end
 
   def test_update_existing
@@ -39,11 +39,11 @@ class LettersTest < MiniTest::Unit::TestCase
     Letters.save(@test_photo_letter_data)
     assert Letters.exists?(@test_photo_letter_data[:flickr_id]), 'PhotoLetter was not created'
 
-    changed_letter = PhotoLetter.find(1)
+    changed_letter = Letters::PhotoLetter.find(@test_photo_letter_data[:flickr_id])
     assert changed_letter.char == 'b', 'PhotoLetter was not updated'
   end
 
-  def delete
+  def test_delete
     puts 'Creating test photo: ' + @test_photo_letter_data[:flickr_id].to_s
     Letters.save(@test_photo_letter_data)
     assert Letters.exists?(@test_photo_letter_data[:flickr_id]), 'PhotoLetter was not created'
