@@ -24,16 +24,26 @@ class LettersTest < MiniTest::Unit::TestCase
   end
 
   def test_insert_new
+    puts 'Creating test photo: ' + @test_photo_letter_data[:flickr_id].to_s
+    Letters.save(@test_photo_letter_data)
+    assert Letters.exists?(@test_photo_letter_data[:flickr_id]), 'PhotoLetter was not created'
   end
 
-  def test_save_existing
+  def test_update_existing
+    puts 'Creating test photo: ' + @test_photo_letter_data[:flickr_id].to_s
+    Letters.save(@test_photo_letter_data)
+    assert Letters.exists?(@test_photo_letter_data[:flickr_id]), 'PhotoLetter was not created'
+
+    puts 'Updating test photo: ' + @test_photo_letter_data[:flickr_id].to_s
+    @test_photo_letter_data[:char] = 'b'
+    Letters.save(@test_photo_letter_data)
+    assert Letters.exists?(@test_photo_letter_data[:flickr_id]), 'PhotoLetter was not created'
+
+    changed_letter = PhotoLetter.find(1)
+    assert changed_letter.char == 'b', 'PhotoLetter was not updated'
   end
 
   def delete
-  end
-
-  # Add new photo letter, delete and ensure deletion
-  def test_save_exists_delete
     puts 'Creating test photo: ' + @test_photo_letter_data[:flickr_id].to_s
     Letters.save(@test_photo_letter_data)
     assert Letters.exists?(@test_photo_letter_data[:flickr_id]), 'PhotoLetter was not created'

@@ -8,7 +8,7 @@ class Letters
   #
   # @param args [Map] the photo letter values
   def self.save(args = {})
-    PhotoLetter.new(args).save!
+    PhotoLetter.new(args).upsert
   end
 
   # Remove an existing PhotoLetter from the store
@@ -30,7 +30,7 @@ class Letters
   # @param word [String] the word desired
   # @param tags [Array<String>] an optional array of tags the returning array must contain
   # @return [Array<PhotoLetter>] an array of photo letter objects
-  def random_word(word, *tags)
+  def self.random_word(word, *tags)
 
   end
 
@@ -38,7 +38,7 @@ class Letters
   #
   # @param word [String] the word the test for available tags
   # @return [Array<String>] a String array of tags available for all letters
-  def available_tags(word)
+  def self.available_tags(word)
 
   end
 
