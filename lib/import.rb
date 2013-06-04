@@ -89,7 +89,7 @@ class Import
                 tags: analyzer.tags,
                 flickr_id: photo.id,
                 flickr_license: photo.license,
-                flickr_last_update: DateTime.parse(photo.lastupdate),
+                flickr_last_update: Time.at(photo.lastupdate.to_i).to_datetime,
                 flickr_owner: photo.owner,
                 flickr_url_sq: defined?(photo.url_sq) ? photo.url_sq : nil,
                 flickr_url_t: defined?(photo.url_t) ? photo.url_t : nil,
@@ -196,7 +196,7 @@ class Import
           end
         end
 
-        @import = !@char.nil? && (!@exists || Letters.modified?(photo.id, DateTime.parse(photo.lastupdate)))
+        @import = !@char.nil? && (!@exists || Letters.modified?(photo.id, Time.at(photo.lastupdate.to_i).to_datetime))
         @delete = false
       else
         # Delete if license is not valid

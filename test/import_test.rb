@@ -12,7 +12,7 @@ class ImportTest < MiniTest::Unit::TestCase
         tags: %w(tag1 tag2),
         flickr_id: 1,
         flickr_license: 1,
-        flickr_last_update: '2013-03-20 21:49:10 -0400',
+        flickr_last_update: DateTime.parse('2013-03-20 21:49:10 -0400').to_i,
         flickr_owner: 'owner1',
         flickr_url_sq: 'http://www.yahoo.com',
         flickr_url_t: 'http://www.yahoo.com',
@@ -23,28 +23,32 @@ class ImportTest < MiniTest::Unit::TestCase
     Letters.save(@test_photo_letter_data)
 
     @test_flickr_photo_exists = MockPhoto.new(
-      1, 1, '2013-03-20 21:49:10 -0400', 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
+      1, 1, DateTime.parse('2013-03-20 21:49:10 -0400').to_i, 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
         'a tag1 tag2 canon')
 
     @test_flickr_photo_new = MockPhoto.new(
-      2, 1, '2013-03-20 21:49:10 -0400', 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
+      2, 1, DateTime.parse('2013-03-20 21:49:10 -0400').to_i, 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
         'a tag1 tag3 canon')
 
     @test_flickr_photo_new_bad_license = MockPhoto.new(
-      3, 3, '2013-03-20 21:49:10 -0400', 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
+      3, 3, DateTime.parse('2013-03-20 21:49:10 -0400').to_i, 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
         'a tag1 tag2 canon')
 
     @test_flickr_photo_exists_new_date = MockPhoto.new(
-      1, 1, '2013-07-21 21:49:10 -0400', 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
+      1, 1, DateTime.parse('2013-07-21 21:49:10 -0400').to_i, 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
         'a tag1 tag2 canon')
 
     @test_flickr_photo_exists_changed_license = MockPhoto.new(
-      1, 3, '2013-03-20 21:49:10 -0400', 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
+      1, 3, DateTime.parse('2013-03-20 21:49:10 -0400').to_i, 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
         'a tag1 tag2 canon')
   end
 
   def teardown
     Letters::PhotoLetter.delete_all
+  end
+
+  def test_parse_flickr_date
+    assert Time.at(1369824900).to_datetime
   end
 
   # Add new photo letter, delete and ensure deletion

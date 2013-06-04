@@ -9,7 +9,7 @@ class LettersTest < MiniTest::Unit::TestCase
         tags: %w(tag1 tag2),
         flickr_id: 1,
         flickr_license: 1,
-        flickr_last_update: '2013-03-20 21:49:10 -0400',
+        flickr_last_update: DateTime.parse('2013-03-20 21:49:10 -0400').to_i,
         flickr_owner: 'owner1',
         flickr_url_sq: 'http://www.yahoo.com',
         flickr_url_t: 'http://www.yahoo.com',
