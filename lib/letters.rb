@@ -14,21 +14,22 @@ module Letters
   #
   # @param photo_letter_id [Integer] the photo letter id
   def self.delete(photo_letter_id)
-    PhotoLetter.delete_all(_id: photo_letter_id)
+    PhotoLetter.delete_all(:_id => photo_letter_id)
   end
 
   # Checks whether a PhotoLetter exists
   #
   # @param photo_letter_id [Integer] the photo letter id
   def self.exists?(photo_letter_id)
-    PhotoLetter.where(_id: photo_letter_id).exists?
+    PhotoLetter.where(:_id => photo_letter_id).exists?
   end
 
-  # Returns the modified date of a PhotoLetter
+  # Has the given PhotoLetter got a date older than the given date?
   #
   # @param photo_letter_id [Integer] the photo letter id
-  def self.modified_date(photo_letter_id)
-    PhotoLetter.find(photo_letter_id).flickr_last_update
+  # @param date the new photo_letter date
+  def self.modified?(photo_letter_id, date)
+    PhotoLetter.where(:_id => photo_letter_id, :flickr_last_update.lt => date).exists?
   end
 
   # Create an array of PhotoLetter objects to represent the given word
@@ -51,6 +52,7 @@ module Letters
   # Mongo collection of PhotoLettter
   class PhotoLetter
     include Mongoid::Document
+    store_in collection: "photo_letters"
 
     # Custom id field: use flickr_id
     field :_id, type: Integer, default: ->{ flickr_id }

@@ -1,4 +1,4 @@
-import:
+import-schedule:
   cron: 0 0 * * *
   class: Import
   args:

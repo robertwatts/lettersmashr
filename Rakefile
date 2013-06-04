@@ -3,9 +3,10 @@ require 'rake/testtask'
 require 'bundler'
 Bundler.setup(:default, :test)
 
+require './app'
+require 'resque/tasks'
+
 task "resque:setup" do
-  require './app'
-  require 'resque/tasks'
   ENV['QUEUE'] = '*'
 end
 

@@ -49,10 +49,10 @@ class LettersTest < MiniTest::Unit::TestCase
     assert !Letters.exists?(@test_photo_letter_data[:flickr_id]), 'PhotoLetter could not be deleted'
   end
 
-  def test_modified_date
+  def test_modified
     assert Letters.exists?(@test_photo_letter_data[:flickr_id]), 'PhotoLetter was not created'
-    assert Letters.modified_date(@test_photo_letter_data[:flickr_id]) > '1970-01-01'
-    assert Letters.modified_date(@test_photo_letter_data[:flickr_id]) < Time.now
+    assert !Letters.modified?(@test_photo_letter_data[:flickr_id], DateTime.parse('2003-03-20 21:49:10 -0400')), 'PhotoLetter has a more recent time'
+    assert Letters.modified?(@test_photo_letter_data[:flickr_id], DateTime.now), 'PhotoLetter has a newer time'
   end
 
 end

@@ -1,6 +1,7 @@
 require 'bundler'
 Bundler.require(:default)
 require File.expand_path('../lib/import', __FILE__)
+require 'resque_scheduler'
 
 configure do
   puts "Initializing redis " + ENV["REDISTOGO_URL"]

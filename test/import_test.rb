@@ -30,6 +30,10 @@ class ImportTest < MiniTest::Unit::TestCase
       2, 1, '2013-03-20 21:49:10 -0400', 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
         'a tag1 tag3 canon')
 
+    @test_flickr_photo_new_bad_license = MockPhoto.new(
+      3, 3, '2013-03-20 21:49:10 -0400', 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
+        'a tag1 tag2 canon')
+
     @test_flickr_photo_exists_new_date = MockPhoto.new(
       1, 1, '2013-07-21 21:49:10 -0400', 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
         'a tag1 tag2 canon')
@@ -80,12 +84,21 @@ class ImportTest < MiniTest::Unit::TestCase
     assert !analyzer.delete, 'This photo should not be deleted'
   end
 
+   def test_photo_analyzer_should_not_import
+    analyzer = Import::PhotoAnalyzer.new(@test_flickr_photo_new_bad_license)
+    assert !analyzer.exists, 'This photo should not exist'
+    assert !analyzer.import, 'This photo should not be imported'
+    assert !analyzer.delete, 'This photo should not be deleted'
+    assert analyzer.tags.nil? , 'Tags should not be processed'
+    assert analyzer.char.nil?,  'Char should not be set'
+  end
+
   def test_photo_analyzer_should_delete_changed_license
     analyzer = Import::PhotoAnalyzer.new(@test_flickr_photo_exists_changed_license)
     assert analyzer.delete, 'This photo should be deleted'
     assert !analyzer.import, 'This photo should not be imported'
     assert analyzer.exists, 'This photo should exist'
-    assert analyzer.tags.nil? , 'Tags should be processed'
+    assert analyzer.tags.nil? , 'Tags should not be processed'
     assert analyzer.char.nil?,  'Char should not be set'
   end
 

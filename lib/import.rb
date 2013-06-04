@@ -85,11 +85,11 @@ class Import
             puts "Deleted photo #{photo.id}"
           elsif analyzer.import   # Save the photo (create or update)
             Letters.save(
-                _id: photo.id,
                 char: analyzer.char,
                 tags: analyzer.tags,
+                flickr_id: photo.id,
                 flickr_license: photo.license,
-                flickr_last_update: photo.lastupdate,
+                flickr_last_update: DateTime.parse(photo.lastupdate),
                 flickr_owner: photo.owner,
                 flickr_url_sq: defined?(photo.url_sq) ? photo.url_sq : nil,
                 flickr_url_t: defined?(photo.url_t) ? photo.url_t : nil,
@@ -100,7 +100,7 @@ class Import
             if analyzer.exists
               import_modified += 1
               puts "Modified photo #{photo.id}"
-            else
+            elsif
               import_created += 1
               puts "Created photo #{photo.id}"
             end
@@ -196,12 +196,12 @@ class Import
           end
         end
 
-        @import = !@char.nil? && (!@exists || DateTime.parse(photo.lastupdate) > Letters.modified_date(photo.id))
+        @import = !@char.nil? && (!@exists || Letters.modified?(photo.id, DateTime.parse(photo.lastupdate)))
         @delete = false
       else
         # Delete if license is not valid
         @import = false
-        @delete = true
+        @delete = @exists
       end
     end
   end
