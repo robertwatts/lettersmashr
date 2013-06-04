@@ -58,15 +58,6 @@ class Import
 
   # Class method to import PhotoLetter
   def import
-    last_update = DateTime.new(1970,1,1)
-
-    if Resque.redis.exists(@redis_most_recent_success)
-      last_update = DateTime.parse(Resque.redis.get(@redis_most_recent_success))
-      puts "Last import: #{last_update.to_s}"
-    end
-
-    puts "Retrieving photos since #{last_update}"
-
     # Set up variables for new import record
     import_begin = Time.now
     import_success = false
@@ -84,8 +75,9 @@ class Import
             :group_id => @letter_pool.nsid, per_page: 100,
             :page => page,
             :extras=> 'last_update,tags,license,url_sq,url_t,url_s,url_q').each do |photo|
-          analyzer = PhotoAnalyzer.new(photo, last_update)
 
+          # Create a PhotoAnalyzer object from the Flickr photo
+          analyzer = PhotoAnalyzer.new(photo)
 
           if analyzer.delete      # Delete photo
             Letters.delete(photo.id)
@@ -186,24 +178,30 @@ class Import
       puts "Ignore list: #{@@tag_ignore_list}"
     end
 
-    # Construct with a flick raw photo object
-    def initialize(photo, last_update)
-      @last_update = last_update
-
+    # Construct with a flickraw photo object
+    def initialize(photo)
       @valid_license = photo.license.to_i.between?(1,2) || photo.license.to_i.between?(4,5) || photo.license.to_i > 6
       @exists = Letters.exists?(photo.id)
-      @import = @valid_license && !@char.nil? && Time.at(photo.lastupdate.to_i).to_datetime >= @last_update
-      @delete = @exists && !@import
 
-      @tags = []
-      @char = nil
-      #Process tags
-      photo.tags.split(' ').each do |tag|
-        if tag.length == 1
-          @char = tag.downcase
-        elsif !@@tag_ignore_list.include?(tag)
-          @tags << tag
+      if @valid_license
+        # Process if valid license
+        @tags = []
+        @char = nil
+        #Process tags
+        photo.tags.split(' ').each do |tag|
+          if tag.length == 1
+            @char = tag.downcase
+          elsif !@@tag_ignore_list.include?(tag)
+            @tags << tag
+          end
         end
+
+        @import = !@char.nil? && (!@exists || DateTime.parse(photo.lastupdate) > Letters.modified_date(photo.id))
+        @delete = false
+      else
+        # Delete if license is not valid
+        @import = false
+        @delete = true
       end
     end
   end
