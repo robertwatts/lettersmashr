@@ -20,6 +20,7 @@ module Letters
   # Checks whether a PhotoLetter exists
   #
   # @param photo_letter_id [Integer] the photo letter id
+  # @return boolean whether a PhotoLetter with this id exists
   def self.exists?(photo_letter_id)
     PhotoLetter.where(:_id => photo_letter_id).exists?
   end
@@ -28,17 +29,26 @@ module Letters
   #
   # @param photo_letter_id [Integer] the photo letter id
   # @param date the new photo_letter date
+  # @return boolean if stored date is older than given date
   def self.modified?(photo_letter_id, date)
     PhotoLetter.where(:_id => photo_letter_id, :flickr_last_update.lt => date).exists?
   end
 
-  # Create an array of PhotoLetter objects to represent the given word
+  # Using Mongo Random Patttern, return a random PhotoLetter for a given a char
+  # http://cookbook.mongodb.org/patterns/random-attribute/
   #
   # @param word [String] the word desired
-  # @param tags [Array<String>] an optional array of tags the returning array must contain
+  # @param tags [Array<String>] an optional array of tags the returning letter must contain at least one of
   # @return [Array<PhotoLetter>] an array of photo letter objects
-  def self.random_word(word, *tags)
+  def self.random_photo_letter(char, required_tags)
+    random = Random.rand()
 
+    random_photo_letter = PhotoLetter.where(:char => char, :tags.in => required_tags, :random.gte => random).first
+    if (random_photo_letter.nil?)
+      random_photo_letter = PhotoLetter.where(:char => char, :tags.in => required_tags, :random.lte => random).first
+    end
+
+    random_photo_letter
   end
 
   # Return an array of available tags for a given word
@@ -54,12 +64,14 @@ module Letters
     include Mongoid::Document
     store_in collection: "photo_letters"
 
-    # Custom id field: use flickr_id
-    field :_id, type: Integer, default: ->{ flickr_id }
+    field :_id, type: Integer, default: ->{ flickr_id }                       # Custom id field: use flickr_id
+
+    field :random, type: BigDecimal, default: Random.rand()      # Used to select random documents
 
     field :char, type: String
-    field :capital, type: Boolean, default: ->{char.upcase}
     field :tags, type: Array
+    field :capital, type: Boolean, default: ->{char.upcase}
+
     field :imported, type: DateTime, default: DateTime.now
 
     field :flickr_id, type: Integer
@@ -71,6 +83,9 @@ module Letters
     field :flickr_url_t, type: String #100x100
     field :flickr_url_s, type: String #240x240
     field :flickr_url_q, type: String #150x150
+
+    # Index the char, tags and random in the same index, run in background
+    index({ char: 1, tags: 1, random: 1 }, { unique: false, background: false })
 
   end
 

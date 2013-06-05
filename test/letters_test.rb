@@ -18,6 +18,36 @@ class LettersTest < MiniTest::Unit::TestCase
     }
     puts 'Creating test photo: ' + @test_photo_letter_data[:flickr_id].to_s
     Letters.save(@test_photo_letter_data)
+
+    @test_photo_letter_data2 = {
+        char: 'a',
+        tags: %w(tag2 tag3),
+        flickr_id: 2,
+        flickr_license: 1,
+        flickr_last_update: DateTime.parse('2013-03-20 21:49:10 -0400').to_i,
+        flickr_owner: 'owner1',
+        flickr_url_sq: 'http://www.yahoo.com',
+        flickr_url_t: 'http://www.yahoo.com',
+        flickr_url_s: 'http://www.yahoo.com',
+        flickr_url_q: nil
+    }
+    puts 'Creating test photo: ' + @test_photo_letter_data2[:flickr_id].to_s
+    Letters.save(@test_photo_letter_data2)
+
+    @test_photo_letter_data3 = {
+        char: 'b',
+        tags: %w(tag2 tag4),
+        flickr_id: 3,
+        flickr_license: 1,
+        flickr_last_update: DateTime.parse('2013-03-20 21:49:10 -0400').to_i,
+        flickr_owner: 'owner1',
+        flickr_url_sq: 'http://www.yahoo.com',
+        flickr_url_t: 'http://www.yahoo.com',
+        flickr_url_s: 'http://www.yahoo.com',
+        flickr_url_q: nil
+    }
+    puts 'Creating test photo: ' + @test_photo_letter_data3[:flickr_id].to_s
+    Letters.save(@test_photo_letter_data3)
   end
 
   def teardown
@@ -53,6 +83,12 @@ class LettersTest < MiniTest::Unit::TestCase
     assert Letters.exists?(@test_photo_letter_data[:flickr_id]), 'PhotoLetter was not created'
     assert !Letters.modified?(@test_photo_letter_data[:flickr_id], DateTime.parse('2003-03-20 21:49:10 -0400')), 'PhotoLetter has a more recent time'
     assert Letters.modified?(@test_photo_letter_data[:flickr_id], DateTime.now), 'PhotoLetter has a newer time'
+  end
+
+  def test_random_photo_letter
+    pl_b = Letters.random_photo_letter('b', ['tag4']) # There can be only one b
+    assert !pl_b.nil? , 'Cannot be nil'
+    assert pl_b.char == 'b', 'PhotoLetter must have char b'
   end
 
 end
