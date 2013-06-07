@@ -1,49 +1,37 @@
 require File.dirname(__FILE__) +  '/test_helper'
 require File.dirname(__FILE__) +  '/../lib/import'
-require File.dirname(__FILE__) +  '/../lib/letters'
+require File.dirname(__FILE__) +  '/../lib/letter'
 
 MockPhoto = Struct.new(:id, :license, :lastupdate, :owner, :url_sq, :url_t, :url_s, :url_q, :tags)
 
 class ImportTest < MiniTest::Unit::TestCase
 
  def setup
-    @test_photo_letter_data = {
-        char: 'a',
-        tags: %w(tag1 tag2),
-        flickr_id: 1,
-        flickr_license: 1,
-        flickr_last_update: DateTime.parse('2013-03-20 21:49:10 -0400').to_i,
-        flickr_owner: 'owner1',
-        flickr_url_sq: 'http://www.yahoo.com',
-        flickr_url_t: 'http://www.yahoo.com',
-        flickr_url_s: 'http://www.yahoo.com',
-        flickr_url_q: nil
-    }
-    Letters.save(@test_photo_letter_data)
+  create_test_photo_data() #see test_helper.rb
 
-    @test_flickr_photo_exists = MockPhoto.new(
-      1, 1, DateTime.parse('2013-03-20 21:49:10 -0400').to_i, 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
-        'a tag1 tag2 canon')
+  @test_flickr_photo_exists = MockPhoto.new(
+    1, 1, DateTime.parse('2013-03-20 21:49:10 -0400').to_i, 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
+      'a tag1 tag2 canon')
 
-    @test_flickr_photo_new = MockPhoto.new(
-      2, 1, DateTime.parse('2013-03-20 21:49:10 -0400').to_i, 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
-        'a tag1 tag3 canon')
+  @test_flickr_photo_new = MockPhoto.new(
+    100, 1, DateTime.parse('2013-03-20 21:49:10 -0400').to_i, 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
+      'z tag1 tag3 canon')
 
-    @test_flickr_photo_new_bad_license = MockPhoto.new(
-      3, 3, DateTime.parse('2013-03-20 21:49:10 -0400').to_i, 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
-        'a tag1 tag2 canon')
+  @test_flickr_photo_new_bad_license = MockPhoto.new(
+    101, 3, DateTime.parse('2013-03-20 21:49:10 -0400').to_i, 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
+      'z tag1 tag2 canon')
 
-    @test_flickr_photo_exists_new_date = MockPhoto.new(
-      1, 1, DateTime.parse('2013-07-21 21:49:10 -0400').to_i, 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
-        'a tag1 tag2 canon')
+  @test_flickr_photo_exists_new_date = MockPhoto.new(
+    1, 1, DateTime.parse('2013-07-21 21:49:10 -0400').to_i, 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
+      'a tag1 tag2 canon')
 
-    @test_flickr_photo_exists_changed_license = MockPhoto.new(
-      1, 3, DateTime.parse('2013-03-20 21:49:10 -0400').to_i, 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
-        'a tag1 tag2 canon')
+  @test_flickr_photo_exists_changed_license = MockPhoto.new(
+    1, 3, DateTime.parse('2013-03-20 21:49:10 -0400').to_i, 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
+      'a tag1 tag2 canon')
   end
 
   def teardown
-    Letters::PhotoLetter.delete_all
+    delete_test_photo_data()
   end
 
   def test_parse_flickr_date
@@ -65,7 +53,7 @@ class ImportTest < MiniTest::Unit::TestCase
 
   def test_photo_analyzer_should_create
     analyzer = Import::PhotoAnalyzer.new(@test_flickr_photo_new)
-    assert analyzer.char == 'a', 'Expecting char a'
+    assert analyzer.char == 'z', 'Expecting char z'
     assert !analyzer.exists, 'This photo should not exist'
     assert analyzer.import, 'This photo needs to be imported'
     assert analyzer.tags.count == 2 ,'Tags should contain 2 elements'

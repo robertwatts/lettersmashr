@@ -1,6 +1,6 @@
 require 'resque/errors'
 require 'flickraw'
-require File.expand_path('../letters', __FILE__)
+require File.expand_path('../letter', __FILE__)
 
 # Manages access to Importer API
 class Import
@@ -9,7 +9,7 @@ class Import
 
   @queue = :import
 
-  # Add a new PhotoLetter to the store
+  # Add a new Letter::Photo to the store
   def initialize
 
     # Setup and authenticate FlickrAPI using FlickrRaw
@@ -56,7 +56,7 @@ class Import
       Resque.enqueue(self)
   end
 
-  # Class method to import PhotoLetter
+  # Class method to import Letter::Photo
   def import
     # Set up variables for new import record
     import_begin = Time.now
@@ -74,17 +74,17 @@ class Import
         flickr.groups.pools.getPhotos(
             :group_id => @letter_pool.nsid, per_page: 100,
             :page => page,
-            :extras=> 'last_update,tags,license,url_sq,url_t,url_s,url_q').each do |photo|
+            :extras=> 'last_update,tags,license,url_sq,url_t,url_s').each do |photo|
 
           # Create a PhotoAnalyzer object from the Flickr photo
           analyzer = PhotoAnalyzer.new(photo)
 
           if analyzer.delete      # Delete photo
-            Letters.delete(photo.id)
+            Letter.delete(photo.id)
             import_deleted += 1
             puts "Deleted photo #{photo.id}"
           elsif analyzer.import   # Save the photo (create or update)
-            Letters.save(
+            Letter.save(
                 char: analyzer.char,
                 tags: analyzer.tags,
                 flickr_id: photo.id,
@@ -181,7 +181,7 @@ class Import
     # Construct with a flickraw photo object
     def initialize(photo)
       @valid_license = photo.license.to_i.between?(1,2) || photo.license.to_i.between?(4,5) || photo.license.to_i > 6
-      @exists = Letters.exists?(photo.id)
+      @exists = Letter.exists?(photo.id)
 
       if @valid_license
         # Process if valid license
@@ -196,7 +196,7 @@ class Import
           end
         end
 
-        @import = !@char.nil? && (!@exists || Letters.modified?(photo.id, Time.at(photo.lastupdate.to_i).to_datetime))
+        @import = !@char.nil? && (!@exists || Letter.modified?(photo.id, Time.at(photo.lastupdate.to_i).to_datetime))
         @delete = false
       else
         # Delete if license is not valid
