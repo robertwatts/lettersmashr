@@ -37,18 +37,38 @@ module Letters
   # Using Mongo Random Patttern, return a random PhotoLetter for a given a char
   # http://cookbook.mongodb.org/patterns/random-attribute/
   #
-  # @param word [String] the word desired
+  # @param char [String] the char desired
   # @param tags [Array<String>] an optional array of tags the returning letter must contain at least one of
-  # @return [Array<PhotoLetter>] an array of photo letter objects
-  def self.random_photo_letter(char, required_tags)
+  # @return [PhotoLetter] a PhotoLetter object
+  def self.random_photo_letter(char, *required_tags)
     random = Random.rand()
+    #puts random
 
-    random_photo_letter = PhotoLetter.where(:char => char, :tags.in => required_tags, :random.gte => random).first
-    if (random_photo_letter.nil?)
-      random_photo_letter = PhotoLetter.where(:char => char, :tags.in => required_tags, :random.lte => random).first
+    # TODO make more BEAUTIFUL
+    if required_tags.empty?
+      random_photo_letter = PhotoLetter.where(:char => char, :random.gte => random).first
+      if random_photo_letter.nil?
+        random_photo_letter = PhotoLetter.where(:char => char, :random.lte => random).first
+      end
+    else
+      random_photo_letter = PhotoLetter.with_any_tags(required_tags).where(:char => char, :random.gte => random).first
+      if random_photo_letter.nil?
+        random_photo_letter = PhotoLetter.with_any_tags(required_tags).where(:char => char, :random.lte => random).first
+      end
     end
 
     random_photo_letter
+  end
+
+  # Create an array of PhotoLetter objects from a given string
+  #
+  # @param str [String] the inbound string
+  # @param tags [Array<String>] an optional array of tags each PhotoLetter must contain at least one of
+  # @return [Array<PhotoLetter>] an array of photo letter objects
+  def self.from_string(str, *required_tags)
+    photo_letters = Array.new
+    str.chars.each { |char| photo_letters << random_photo_letter(char, required_tags) }
+    photo_letters
   end
 
   # Return an array of available tags for a given word
@@ -62,17 +82,18 @@ module Letters
   # Mongo collection of PhotoLettter
   class PhotoLetter
     include Mongoid::Document
+    include Mongoid::TagsArentHard
     store_in collection: "photo_letters"
 
-    field :_id, type: Integer, default: ->{ flickr_id }                       # Custom id field: use flickr_id
-
-    field :random, type: BigDecimal, default: Random.rand()      # Used to select random documents
+    field :_id, type: Integer, default: ->{ flickr_id }                                   # Custom id field: use flickr_id
+    field :random, type: BigDecimal, default: ->{ Random.new.rand() }     # Used to select random documents
 
     field :char, type: String
-    field :tags, type: Array
     field :capital, type: Boolean, default: ->{char.upcase}
 
-    field :imported, type: DateTime, default: DateTime.now
+    taggable_with :tags, seperator: ' '
+
+    field :imported, type: DateTime, default: ->{ DateTime.now}
 
     field :flickr_id, type: Integer
     field :flickr_license, type: Integer
@@ -85,7 +106,7 @@ module Letters
     field :flickr_url_q, type: String #150x150
 
     # Index the char, tags and random in the same index, run in background
-    index({ char: 1, tags: 1, random: 1 }, { unique: false, background: false })
+    index({ char: 1, random: 1 }, { unique: false, background: true })
 
   end
 

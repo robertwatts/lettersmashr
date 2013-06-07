@@ -19,7 +19,6 @@ class ImportTest < MiniTest::Unit::TestCase
         flickr_url_s: 'http://www.yahoo.com',
         flickr_url_q: nil
     }
-    puts 'Creating test photo: ' + @test_photo_letter_data[:flickr_id].to_s
     Letters.save(@test_photo_letter_data)
 
     @test_flickr_photo_exists = MockPhoto.new(

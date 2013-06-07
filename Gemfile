@@ -8,6 +8,7 @@ gem 'resque-scheduler'
 gem 'flickraw'
 gem 'configurability'
 gem 'mongoid'
+gem 'mongoid-tags-arent-hard'
 gem 'json', '~> 1.7.7'
 gem 'sinatra-redis'
 
