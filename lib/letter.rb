@@ -67,13 +67,13 @@ module Letter
 
   end
 
-  # Mongo collection of PhotoLettter
+  # Photo mongo doc
   class Photo
     include Mongoid::Document
     include Mongoid::TagsArentHard
     store_in collection: "letter_photos"
 
-    field :_id, type: Integer, default: ->{ flickr_id }                                   # Custom id field: use flickr_id
+    field :_id, type: Integer, default: ->{ flickr_id }                   # Custom id field: use flickr_id
     field :random, type: BigDecimal, default: ->{ Random.new.rand() }     # Used to select random documents
 
     field :char, type: String
