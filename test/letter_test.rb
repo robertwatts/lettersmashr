@@ -19,21 +19,21 @@ class LetterTest < MiniTest::Unit::TestCase
   end
 
   def test_update_existing
-    assert Letter.exists?(@test_letter_photo_data[:flickr_id]), 'Letter::Photo  was not created'
+    assert Letter.exists?(@test_letter_photo_data[:flickr_id]), 'Letter::Photo was not created'
 
     @test_letter_photo_data[:char] = 'b'
     Letter.save(@test_letter_photo_data)
-    assert Letter.exists?(@test_letter_photo_data[:flickr_id]), 'Letter::Photo  was not created'
+    assert Letter.exists?(@test_letter_photo_data[:flickr_id]), 'Letter::Photo was not created'
 
     changed_letter = Letter::Photo.find(@test_letter_photo_data[:flickr_id])
     assert changed_letter.char == 'b', 'Letter::Photo  was not updated'
   end
 
   def test_delete
-    assert Letter.exists?(@test_letter_photo_data[:flickr_id]), 'Letter::Photo  was not created'
+    assert Letter.exists?(@test_letter_photo_data[:flickr_id]), 'Letter::Photo was not created'
 
     Letter.delete(@test_letter_photo_data[:flickr_id])
-    assert !Letter.exists?(@test_letter_photo_data[:flickr_id]), 'Letter::Photo  could not be deleted'
+    assert !Letter.exists?(@test_letter_photo_data[:flickr_id]), 'Letter::Photo could not be deleted'
   end
 
   def test_modified

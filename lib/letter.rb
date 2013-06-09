@@ -3,68 +3,70 @@ require 'mongoid'
 # Store, query and return Letter::Photo mongoid documents
 module Letter
 
-  # Saves a Photo.  Will create a new one or update an existing one
-  #
-  # @param args [Map] the photo letter values
-  def self.save(args = {})
-    Photo.new(args).upsert
-  end
-
-  # Remove an existing Letter::Photo from the store
-  #
-  # @param photo_letter_id [Integer] the photo letter id
-  def self.delete(photo_letter_id)
-    Photo.delete_all(:_id => photo_letter_id)
-  end
-
-  # Checks whether a Letter::Photo exists
-  #
-  # @param photo_letter_id [Integer] the photo letter id
-  # @return boolean whether a Letter::Photo with this id exists
-  def self.exists?(photo_letter_id)
-    Photo.where(:_id => photo_letter_id).exists?
-  end
-
-  # Has the given Letter::Photo got a date older than the given date?
-  #
-  # @param photo_letter_id [Integer] the photo letter id
-  # @param date the new photo_letter date
-  # @return boolean if stored date is older than given date
-  def self.modified?(photo_letter_id, date)
-    Photo.where(:_id => photo_letter_id, :flickr_last_update.lt => date).exists?
-  end
-
-  # Using Mongo Random Patttern, return a random Letter::Photo for a given a char
-  # http://cookbook.mongodb.org/patterns/random-attribute/
-  #
-  # @param char [String] the char desired
-  # @param tags [Array<String>] an optional array of tags the returning letter must contain at least one of
-  # @return Letter::Photo a Letter::Photo object
-  def self.random(char, *required_tags)
-    random = Random.rand()
-
-    # TODO make more BEAUTIFUL
-    if required_tags.empty?
-      photo = Photo.where(:char => char, :random.gte => random).first
-      if photo.nil?
-        photo = Photo.where(:char => char, :random.lte => random).first
-      end
-    else
-      photo = Photo.with_any_tags(required_tags).where(:char => char, :random.gte => random).first
-      if photo.nil?
-        photo = Photo.with_any_tags(required_tags).where(:char => char, :random.lte => random).first
-      end
+  class << self
+    # Saves a Photo.  Will create a new one or update an existing one
+    #
+    # @param args [Map] the photo letter values
+    def save(args = {})
+      Photo.new(args).upsert
     end
 
-    photo
-  end
+    # Remove an existing Letter::Photo from the store
+    #
+    # @param photo_letter_id [Integer] the photo letter id
+    def delete(photo_letter_id)
+      Photo.delete_all(:_id => photo_letter_id)
+    end
 
-  # Return an array of available tags for a given word
-  #
-  # @param word [String] the word the test for available tags
-  # @return [Array<String>] a String array of tags available for all letters
-  def self.available_tags(word)
+    # Checks whether a Letter::Photo exists
+    #
+    # @param photo_letter_id [Integer] the photo letter id
+    # @return boolean whether a Letter::Photo with this id exists
+    def exists?(photo_letter_id)
+      Photo.where(:_id => photo_letter_id).exists?
+    end
 
+    # Has the given Letter::Photo got a date older than the given date?
+    #
+    # @param photo_letter_id [Integer] the photo letter id
+    # @param date the new photo_letter date
+    # @return boolean if stored date is older than given date
+    def modified?(photo_letter_id, date)
+      Photo.where(:_id => photo_letter_id, :flickr_last_update.lt => date).exists?
+    end
+
+    # Using Mongo Random Patttern, return a random Letter::Photo for a given a char
+    # http://cookbook.mongodb.org/patterns/random-attribute/
+    #
+    # @param char [String] the char desired
+    # @param tags [Array<String>] an optional array of tags the returning letter must contain at least one of
+    # @return Letter::Photo a Letter::Photo object
+    def random(char, *required_tags)
+      random = Random.rand()
+
+      # TODO make more BEAUTIFUL
+      if required_tags.empty?
+        photo = Photo.where(:char => char, :random.gte => random).first
+        if photo.nil?
+          photo = Photo.where(:char => char, :random.lte => random).first
+        end
+      else
+        photo = Photo.with_any_tags(required_tags).where(:char => char, :random.gte => random).first
+        if photo.nil?
+          photo = Photo.with_any_tags(required_tags).where(:char => char, :random.lte => random).first
+        end
+      end
+
+      return photo
+    end
+
+    # Return an array of available tags for a given word
+    #
+    # @param word [String] the word the test for available tags
+    # @return [Array<String>] a String array of tags available for all letters
+    def available_tags(word)
+
+    end
   end
 
   # Photo mongo doc

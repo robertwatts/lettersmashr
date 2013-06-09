@@ -13,7 +13,6 @@ configure do
   puts "Initializing Resque"
   Resque.redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
   Resque.redis.namespace = "resque:lettersmashr_import"
-  set :redis, ENV["REDISTOGO_URL"]
 
   puts "Initializing Import Resque schedule"
   Resque.schedule = YAML.load_file(File.dirname(__FILE__)  + "/config/resque_schedule.yml")
