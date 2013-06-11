@@ -72,6 +72,7 @@ DEPENDENCIES
   minitest
   mongoid
   mongoid-tags-arent-hard
+  multi_json
   rake
   resque (~> 1.22.0)
   resque-concurrent-restriction

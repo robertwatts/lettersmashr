@@ -26,11 +26,11 @@ class SmashTest < MiniTest::Unit::TestCase
     puts enc_id
   end
 
-  def test_encode_img_id
-    enc_id = Smash.encode_img_id(['test1', 'test2'])
+  def test_encode_smashed_image_id
+    enc_id = Smash.encode_smashed_image_id(['test1', 'test2'])
     assert Base64.urlsafe_decode64(enc_id) == 'test1,test2|', 'Should decode test1, test2'
 
-    enc_id = Smash.encode_img_id(['test1', 'test2'], ['tag1', 'tag2'])
+    enc_id = Smash.encode_smashed_image_id(['test1', 'test2'], ['tag1', 'tag2'])
     puts enc_id
     puts Base64.urlsafe_decode64(enc_id)
     assert Base64.urlsafe_decode64(enc_id) == 'test1,test2|tag1,tag2', 'Should decode test1, test2|tag1,tag2'

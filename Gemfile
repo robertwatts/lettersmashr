@@ -10,6 +10,7 @@ gem 'blitline'
 gem 'mongoid'
 gem 'mongoid-tags-arent-hard'
 gem 'json', '~> 1.7.7'
+gem 'multi_json'
 gem 'sinatra-redis'
 
 group :test do

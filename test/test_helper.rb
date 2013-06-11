@@ -5,6 +5,14 @@ Bundler.require(:default, :test)
 puts 'Initializing Mongoid ' + ENV['RACK_ENV']
 Mongoid.load!(File.dirname(__FILE__) + '/../config/mongoid.yml')
 
+puts "Initializing redis " + ENV["REDISTOGO_URL"]
+redis_uri = URI.parse(ENV["REDISTOGO_URL"])
+
+puts "Initializing Resque"
+Resque.redis = Redis.new(:host => redis_uri.host, :port => redis_uri.port, :password => redis_uri.password)
+Resque.redis.namespace = "resque:lettersmashr"
+Resque.inline = true # Make resque run synchronously during tests
+
 # Creates test photo data, for use by tests
 def create_test_photo_data
   @test_letter_photo_data = {
