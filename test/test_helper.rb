@@ -53,7 +53,6 @@ def create_test_photo_data
       flickr_url_s: 'http://farm8.staticflickr.com/7055/8690917380_2ef7594d0f_m.jpg'
   }
   Letter.save(@test_letter_photo_data3)
-  puts "Created test photos"
 end
 
 def delete_test_photo_data

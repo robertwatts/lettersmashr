@@ -14,7 +14,7 @@ gem 'multi_json'
 gem 'sinatra-redis'
 
 group :test do
-  gem 'minitest'
+  gem 'rack-test'
 end
 
 group :cli do

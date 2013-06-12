@@ -1,4 +1,4 @@
-require './app.rb'
+require './app'
 require 'resque/server'
 
 $stdout.sync = true
