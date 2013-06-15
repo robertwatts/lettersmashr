@@ -44,11 +44,11 @@ end
 # See http://stackoverflow.com/questions/5079367/use-http-status-202-for-asynchronous-operations
 get '/api/v1/status/:smashed_image_id' do
   smashed_image_id = params['smashed_image_id']
+  puts "STATUS: " + smashed_image_id
   if Smash.processing?(smashed_image_id)
     status 200
   elsif Smash.exists?(smashed_image_id)
-    status 303
-    url = Smash.url(smashed_image_id)
+    redirect Smash.url(smashed_image_id)
   else
     status 404
   end

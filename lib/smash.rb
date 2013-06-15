@@ -25,6 +25,14 @@ module Smash
     # Returns a url of a SmashedImage
     # @param smashed_image_id [String] the smashed_image_id of a SmashedImage
     # @return [String] the url of the smashed image
+    def url(smashed_image_id)
+      SmashedImage.find(smashed_image_id).url
+    end
+
+
+    # Returns SmashedImage
+    # @param smashed_image_id [String] the smashed_image_id of a SmashedImage
+    # @return [Smash::SmashedImage] the url of the smashed image
     def image(smashed_image_id)
       SmashedImage.find(smashed_image_id)
     end
@@ -38,7 +46,6 @@ module Smash
       letter_photo_urls = Array.new
       letter_photo_ids = Array.new
       text.each_char { |letter|
-        puts "getting letter"
         puts letter
         puts required_tags
         letter_photo = Letter.random(letter, *required_tags)
