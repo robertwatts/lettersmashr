@@ -45,7 +45,7 @@ module Letter
       random = Random.rand()
 
       # TODO make more BEAUTIFUL
-      if required_tags.empty?
+      if required_tags.nil? || required_tags.empty?
         photo = Photo.where(:char => char, :random.gte => random).first
         if photo.nil?
           photo = Photo.where(:char => char, :random.lte => random).first
@@ -60,12 +60,13 @@ module Letter
       return photo
     end
 
-    # Return an array of available tags for a given word
+    # Determines available tags for the given text string
     #
-    # @param word [String] the word the test for available tags
-    # @return [Array<String>] a String array of tags available for all letters
-    def available_tags(word)
-
+    # @param text [String] the inbound string
+    # @param tags [Array<String>] an optional array of tags that must also be matched
+    # @return [Array<String>] an array of available tags
+    def available_tags(text, *required_tags)
+      Photo.in(:char => text.chars.to_a).all_tags
     end
   end
 

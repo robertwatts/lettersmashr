@@ -22,14 +22,6 @@ module Smash
       return SmashedImage.where(:_id => smashed_image_id).exists?
     end
 
-    # Returns a url of a SmashedImage
-    # @param smashed_image_id [String] the smashed_image_id of a SmashedImage
-    # @return [String] the url of the smashed image
-    def url(smashed_image_id)
-      SmashedImage.find(smashed_image_id).url
-    end
-
-
     # Returns SmashedImage
     # @param smashed_image_id [String] the smashed_image_id of a SmashedImage
     # @return [Smash::SmashedImage] the url of the smashed image
@@ -46,21 +38,24 @@ module Smash
       letter_photo_urls = Array.new
       letter_photo_ids = Array.new
       text.each_char { |letter|
-        puts letter
-        puts required_tags
         letter_photo = Letter.random(letter, *required_tags)
-        letter_photo_urls << letter_photo.flickr_url_s                              # TODO make configurable
+        letter_photo_urls << letter_photo.flickr_url_t                            # TODO make configurable
         letter_photo_ids << letter_photo._id
       }
 
       # Create smashed_image_id by base64 encoding the ids and requireds tags in a url safe way
       smashed_image_id = Base64.urlsafe_encode64(letter_photo_ids.join(',') + "|" + required_tags.join(','))
 
+      # Add this id to the in progress set
+      Resque.redis.sadd(ImageSmasher.worker_in_progess_key, smashed_image_id)
+
       # Create the ImageSmasherConfig struct for this job
       image_smasher_config = ImageSmasherConfig.new(smashed_image_id, letter_photo_ids, letter_photo_urls, text)
 
-      # Enqueue the job with Resque and return the smashed_image_id
+      # Enqueue the job with Resque
       Resque.enqueue(ImageSmasher, image_smasher_config)
+
+      # Return the smashed_image_id
       return smashed_image_id
     end
   end
@@ -80,6 +75,12 @@ module Smash
     field :accessed, type: Integer, default: 0                  # Access count for this image
     field :width, type: Integer                                 # Width of smashed image
     field :height, type: Integer                                # Height of smashed image
+
+    # After an upsert make sure the this image id is removed from in progress set
+    after_upsert do |document|
+      puts "After insert: " + document.text
+      Resque.redis.srem(ImageSmasher.worker_in_progess_key, document.smashed_image_id)
+    end
   end
 
   # Config struct for the ImageSmasher
@@ -108,16 +109,12 @@ module Smash
 
     # Process the photo_array
     def process_image
-      # Add this id to the in progress set
-      Resque.redis.sadd(ImageSmasher.worker_in_progess_key, @config['smashed_image_id'])
+      # Get first and array of the rest
+      # TODO Check for length!
+      src_photo_url = @config['letter_photo_urls'][0]
+      other_photo_urls = @config['letter_photo_urls'].slice(1, @config['letter_photo_urls'].length).join(",")
 
-      begin
-        # Get first and array of the rest
-        # TODO Check for length!
-        src_photo_url = @config['letter_photo_urls'][0]
-        other_photo_urls = @config['letter_photo_urls'].slice(1, @config['letter_photo_urls'].length).join(",")
-
-        # Send request to Blitline
+      # Send request to Blitline
         blitline_app_id = ENV['BLITLINE_APPLICATION_ID']
         blitline_service = Blitline.new
         blitline_service.add_job_via_hash({
@@ -137,8 +134,15 @@ module Smash
           ]
         })
 
+
+      job_id = ''
+      puts 'Blitline post ' + Benchmark.measure {
         blitline_job = blitline_service.post_jobs                 # Post job to Blitline
         job_id = blitline_job['results'][0]['job_id']             # Get job_id from Blitline
+      }.to_s
+
+      results = {}
+      puts 'Blitline response ' + Benchmark.measure {
 
         # Poll BlitLine until job is complete
         # TODO replace with Postback!
@@ -146,20 +150,17 @@ module Smash
         response = Net::HTTP.get('cache.blitline.com', '/listen/' + job_id)
         data = MultiJson.load(response)
         results = MultiJson.load(data['results'])                 # Double decode required by inconsistent Blitline JSON
+      }.to_s
 
-        # Save SmashedImage
-        SmashedImage.new(
-          smashed_image_id: @config['smashed_image_id'],
-          text: @config['text'],
-          photo_ids: @config['letter_photo_ids'],
-          url: results['images'][0]['s3_url'],
-          width: results['images'][0]['meta']['width'].to_i,
-          height: results['images'][0]['meta']['height'].to_i
-        ).upsert
-      ensure
-        # Whatever happens, remove this image id from the in progress set
-        Resque.redis.srem(ImageSmasher.worker_in_progess_key, @config['smashed_image_id'])
-      end
+      # Save SmashedImage
+      SmashedImage.new(
+        smashed_image_id: @config['smashed_image_id'],
+        text: @config['text'],
+        photo_ids: @config['letter_photo_ids'],
+        url: results['images'][0]['s3_url'],
+        width: results['images'][0]['meta']['width'].to_i,
+        height: results['images'][0]['meta']['height'].to_i
+      ).upsert
     end
   end
 end

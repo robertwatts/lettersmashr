@@ -22,8 +22,8 @@ def create_test_photo_data
       flickr_license: 1,
       flickr_last_update: DateTime.parse('2013-03-20 21:49:10 -0400').to_i,
       flickr_owner: 'owner1',
-      flickr_url_sq: 'http://www.yahoo.com',
-      flickr_url_t: 'http://www.yahoo.com',
+      flickr_url_sq: 'http://farm9.staticflickr.com/8227/8492182496_9994616090_m.jpg',
+      flickr_url_t: 'http://farm9.staticflickr.com/8227/8492182496_9994616090_m.jpg',
       flickr_url_s: 'http://farm9.staticflickr.com/8227/8492182496_9994616090_m.jpg'
   }
   Letter.save(@test_letter_photo_data)
@@ -35,8 +35,8 @@ def create_test_photo_data
       flickr_license: 1,
       flickr_last_update: DateTime.parse('2013-03-20 21:49:10 -0400').to_i,
       flickr_owner: 'owner1',
-      flickr_url_sq: 'http://www.yahoo.com',
-      flickr_url_t: 'http://www.yahoo.com',
+      flickr_url_sq: 'http://farm8.staticflickr.com/7131/7689864678_95fa61b20a_m.jpg',
+      flickr_url_t: 'http://farm8.staticflickr.com/7131/7689864678_95fa61b20a_m.jpg',
       flickr_url_s: 'http://farm8.staticflickr.com/7131/7689864678_95fa61b20a_m.jpg'
   }
   Letter.save(@test_letter_photo_data2)
@@ -48,8 +48,8 @@ def create_test_photo_data
       flickr_license: 1,
       flickr_last_update: DateTime.parse('2013-03-20 21:49:10 -0400').to_i,
       flickr_owner: 'owner1',
-      flickr_url_sq: 'http://www.yahoo.com',
-      flickr_url_t: 'http://www.yahoo.com',
+      flickr_url_sq: 'http://farm8.staticflickr.com/7055/8690917380_2ef7594d0f_m.jpg',
+      flickr_url_t: 'http://farm8.staticflickr.com/7055/8690917380_2ef7594d0f_m.jpg',
       flickr_url_s: 'http://farm8.staticflickr.com/7055/8690917380_2ef7594d0f_m.jpg'
   }
   Letter.save(@test_letter_photo_data3)

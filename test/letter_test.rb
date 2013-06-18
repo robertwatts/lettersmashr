@@ -75,4 +75,18 @@ class LetterTest < MiniTest::Unit::TestCase
       warn 'Unable to the second Letter::Photo for character "a"'
     end
   end
+
+  def test_available_tags
+    available_tags = Letter.available_tags('ab')
+    assert available_tags.length == 4
+    assert available_tags.include?('tag1')
+    assert available_tags.include?('tag2')
+    assert available_tags.include?('tag3')
+    assert available_tags.include?('tag4')
+
+    available_tags = Letter.available_tags('b')
+    assert available_tags.length == 2
+    assert available_tags.include?('tag2')
+    assert available_tags.include?('tag4')
+  end
 end

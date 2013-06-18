@@ -18,24 +18,22 @@ class AppTest < MiniTest::Unit::TestCase
     Sinatra::Application
   end
 
-  def test_smash_and_status
+  def test_convert_tags
+    assert convert_tags(nil) == nil
+    assert convert_tags('') == nil
+    assert convert_tags('tag1') == ['tag1']
+    assert convert_tags('tag1,tag2') == ['tag1', 'tag2']
+  end
+
+  def test_smash_and_grab
     post '/api/v1/smash/ab?tags=tag4'
     assert last_response.status == 202, 'Response should be 202, instead: ' + last_response.status.to_s
 
     smashed_image_id = last_response.body
     assert Base64.urlsafe_decode64(smashed_image_id) == '2,3|tag4', 'Returned ID not decoding as expected'
 
-    get '/api/v1/status/' + smashed_image_id
-
-    while last_response.status == 200 do
-      puts "Waiting for redirect"
-    end
-
-    assert last_response.status == 302, 'Response status is not a 302 redirect: ' + last_response.status.to_s
-    puts last_response.headers['Location']
-    assert !last_response.headers['Location'].nil?
-
-
+    get '/api/v1/image/' + smashed_image_id
+    assert last_response.status == 200, 'Response status is not 200: ' + last_response.status.to_s
   end
 
 end
