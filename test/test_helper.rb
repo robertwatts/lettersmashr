@@ -43,7 +43,7 @@ def create_test_photo_data
 
   @test_letter_photo_data3 = {
       char: 'b',
-      tags: %w(tag2 tag4),
+      tags: %w(tag2 tag4, tag5),
       flickr_id: 3,
       flickr_license: 1,
       flickr_last_update: DateTime.parse('2013-03-20 21:49:10 -0400').to_i,

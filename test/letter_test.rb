@@ -76,17 +76,42 @@ class LetterTest < MiniTest::Unit::TestCase
     end
   end
 
-  def test_available_tags
-    available_tags = Letter.available_tags('ab')
-    assert available_tags.length == 4
-    assert available_tags.include?('tag1')
-    assert available_tags.include?('tag2')
-    assert available_tags.include?('tag3')
-    assert available_tags.include?('tag4')
+  def test_tag_list
+    # Find by text
+    tag_list = Letter.tag_list('ab')
+    assert tag_list.length == 2, 'Wrong length ' + tag_list.length.to_s + ', expecting 4'
+    assert tag_list.include?('tag2')
+    assert tag_list.include?('tag4')
 
-    available_tags = Letter.available_tags('b')
-    assert available_tags.length == 2
-    assert available_tags.include?('tag2')
-    assert available_tags.include?('tag4')
+    tag_list = Letter.tag_list('b')
+    assert tag_list.length == 3
+    assert tag_list.include?('tag2')
+    assert tag_list.include?('tag4')
+    assert tag_list.include?('tag5')
+
+    # Find by text and start_with
+    tag_list = Letter.tag_list('ab', [], 'tag')
+    assert tag_list.length == 2, 'Wrong length ' + tag_list.length.to_s + ', expecting 2'
+    assert tag_list.include?('tag2')
+    assert tag_list.include?('tag4')
+
+    tag_list = Letter.tag_list('ab', [], 'tag4')
+    assert tag_list.length == 1, 'Wrong length ' + tag_list.length.to_s + ', expecting 1'
+    assert tag_list.include?('tag4')
+
+    # Find by text, existing tag and start_with
+    tag_list = Letter.tag_list('b', ['tag5'], 'tag')
+    assert tag_list.length == 2, 'Wrong length ' + tag_list.length.to_s + ', expecting 2'
+    assert tag_list.include?('tag2')
+    assert tag_list.include?('tag4')
+
+    tag_list = Letter.tag_list('b', ['tag2', 'tag5'], 'tag4')
+    assert tag_list.length == 1, 'Wrong length ' + tag_list.length.to_s + ', expecting 1'
+    assert tag_list.include?('tag4')
+
+    tag_list = Letter.tag_list('ab', ['tag2'], 'tag')
+    assert tag_list.length == 1, 'Wrong length ' + tag_list.length.to_s + ', expecting 1'
+    assert tag_list.include?('tag4')
+
   end
 end

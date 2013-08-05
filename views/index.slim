@@ -1,20 +1,63 @@
 doctype 5
 html
   head
+    meta charset="utf8"
+    meta name="viewport" content="width=device-width, initial-scale=1.0"
     title Lettersmashr
-    script type='text/javascript' src='http://code.jquery.com/jquery-2.0.2.min.js'
-    script type='text/javascript' src='javascript/lettersmashr.js'
+    link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet"
+    link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.2.0/pure-min.css"
+    link rel="stylesheet" href="css/lettersmashr.css"
+    script src="http://use.typekit.net/ajf8ggy.js"
+    javascript:
+      try { Typekit.load(); } catch (e) {}
 
   body
-    h1 Lettersmashr
+    div class="content pure-g-r"
+      div class="header pure-u-1"
+        div class="pure-menu pure-menu-open pure-menu-fixed pure-menu-horizontal"
+          a class="pure-menu-heading" href="/" Lettersmashr
+          ul
+            li
+              a href="#" API
+            li
+              a href="#" About
 
-    form id='smash_form'
-      hidden name='redirect' value='true'
-      label for='text' Text to smash
-      input id='text' type='text' name="text"
+        div class="content pure-u-1"
+          div class="pure-g-r"
+            div class="pure-u-1 form-box"
+              div class="l-box"
+                form class="pure-form" id='smash_form'
+                  div class="pure-g-r form-text"
+                    input type="text" id="text" class="pure-input-1" name="text" required="required" placeholder="Write text to create an image" autocomplete="off"
+                  div class="pure-g-r"
+                    div class="pure-u-4-5"
+                      div class="button-padding-top-left"
+                        textarea id="tags" rows="1"
+                    div class="pure-u-1-5"
+                      div class="button-padding-top-left"
+                        input type="submit" class="pure-button" value="Smash"
 
-      label for='tags' Tags
-      input id='tags' type='text' name='tags'
+          div class="pure-g-r"
+            div class="pure-u-1 image-box"
+              #image
 
-      input type='submit'
-    #image
+    button id="tmpbutton" class="pure-button"
+      |Hit me
+
+    script src="http://yui.yahooapis.com/3.10.1/build/yui/yui-min.js"
+
+    javascript:
+      YUI().use('node-base', 'node-event-delegate', function (Y) {
+          // This just makes sure that the href="#" attached to the <a> elements
+          // don't scroll you back up the page.
+          Y.one('.content').delegate('click', function (e) {
+              e.preventDefault();
+          }, 'a[href="#"]');
+      });
+
+    script type="text/javascript" src="http://code.jquery.com/jquery-2.0.2.min.js"
+
+    script src="js/textext-jquery-plugin.js" type="text/javascript" charset="utf-8"
+
+    script type="text/javascript" src="js/lettersmashr.js"
+

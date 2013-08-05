@@ -5,6 +5,7 @@ require File.expand_path('../lib/letter', __FILE__)
 require File.expand_path('../lib/smash', __FILE__)
 require 'resque_scheduler'
 require 'slim'
+require 'json'
 
 configure do
   puts 'Initializing Mongoid ' + ENV['RACK_ENV']
@@ -27,19 +28,6 @@ get '/' do
   slim :index
 end
 
-# Converts a comma delimited tag http parameter into an array
-def convert_tags(tags)
-  if (tags.nil? || tags.empty?)
-    return nil
-  else
-    tags_array = []
-    if !tags.nil?
-      tags_array = tags.split(',')
-    end
-    return tags_array
-  end
-end
-
 # Smash a new image based on supplied letters and required tags.
 #
 # Default response is 202 "Accepted", meaning that "request has been accepted for processing, but the processing
@@ -47,10 +35,8 @@ end
 #
 # The response body will contain an identifier for the smashed image currently being processed
 post '/api/v1/smash/:text' do
-  tags_array = convert_tags(params['tags'])
-
   # Enqueue the image for smashing...
-  smashed_image_id = Smash.enqueue(params['text'], *tags_array)
+  smashed_image_id = Smash.enqueue(params['text'], params['tags'])
 
   # If explicity requested, wait until processing has finished and redirect
   if !params.include?('redirect') && params['redirect'] == 'true'
@@ -64,7 +50,6 @@ post '/api/v1/smash/:text' do
 
   # By default, simply return the smashed_image_id as the response body
   status 202
-  puts "Created: " + params['text']
   return smashed_image_id
 end
 
@@ -97,15 +82,16 @@ get '/api/v1/image/:smashed_image_id' do
   }.to_json
 end
 
+# Return a single random photo for a given letter
 get '/api/v1/random_letter_photo/:letter' do
   content_type :json
-  tags_array = convert_tags(params['tags'])
-  Letter.random(params['letter'], *tags_array).to_json
+  Letter.random(params['letter'], params['tags']).to_json
 end
 
 # Generate a list of tags available for the supplied letters and required tags
 get '/api/v1/tags' do
-
+  content_type :json
+  Letter.tag_list(params['text'], params['also_tagged_with'], params['start_with']).to_json
 end
 
 get '/import' do

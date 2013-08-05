@@ -34,11 +34,11 @@ module Smash
     # @param text [String] the inbound string
     # @param tags [Array<String>] an optional array of tags each letter must contain at least one of
     # @return [String] an smashed_image_id
-    def enqueue(text, *required_tags)
+    def enqueue(text, required_tags=[])
       letter_photo_urls = Array.new
       letter_photo_ids = Array.new
       text.each_char { |letter|
-        letter_photo = Letter.random(letter, *required_tags)
+        letter_photo = Letter.random(letter, required_tags)
         letter_photo_urls << letter_photo.flickr_url_t                            # TODO make configurable
         letter_photo_ids << letter_photo._id
       }

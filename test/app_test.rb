@@ -20,8 +20,8 @@ class AppTest < MiniTest::Unit::TestCase
 
   def test_convert_tags
     assert convert_tags(nil) == nil
-    assert convert_tags('') == nil
-    assert convert_tags('tag1') == ['tag1']
+    assert convert_tags([]) == nil
+    assert convert_tags(['tag1']) == ['tag1']
     assert convert_tags('tag1,tag2') == ['tag1', 'tag2']
   end
 

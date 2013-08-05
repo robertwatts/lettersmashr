@@ -1,5 +1,5 @@
 require 'mongoid'
-
+require 'set'
 # Store, query and return Letter::Photo mongoid documents
 module Letter
 
@@ -39,21 +39,20 @@ module Letter
     # http://cookbook.mongodb.org/patterns/random-attribute/
     #
     # @param char [String] the char desired
-    # @param tags [Array<String>] an optional array of tags the returning letter must contain at least one of
+    # @param tags [Array<String>] an array of tags the returning letter must contain at least one of, default is empty
     # @return Letter::Photo a Letter::Photo object
-    def random(char, *required_tags)
+    def random(char, required_tags=[])
       random = Random.rand()
 
-      # TODO make more BEAUTIFUL
       if required_tags.nil? || required_tags.empty?
         photo = Photo.where(:char => char, :random.gte => random).first
         if photo.nil?
           photo = Photo.where(:char => char, :random.lte => random).first
         end
       else
-        photo = Photo.with_any_tags(required_tags).where(:char => char, :random.gte => random).first
+        photo = Photo.with_all_tags(required_tags).where(:char => char, :random.gte => random).first
         if photo.nil?
-          photo = Photo.with_any_tags(required_tags).where(:char => char, :random.lte => random).first
+          photo = Photo.with_all_tags(required_tags).where(:char => char, :random.lte => random).first
         end
       end
 
@@ -63,10 +62,39 @@ module Letter
     # Determines available tags for the given text string
     #
     # @param text [String] the inbound string
-    # @param tags [Array<String>] an optional array of tags that must also be matched
+    # @param also_tagged_with [Array<String>] an optional array of tags that must also be matched
+    # @param start_with [String] an optional string that filters tags that start with this string
     # @return [Array<String>] an array of available tags
-    def available_tags(text, *required_tags)
-      Photo.in(:char => text.chars.to_a).all_tags
+    def tag_list(text, also_tagged_with=[], start_with=nil)
+      chars = text.chars.to_a             # Convert text into char
+
+      if also_tagged_with.nil? || also_tagged_with.empty?
+        # Populate the tag_set for the first char
+        tag_set = Photo.where(:char => chars.shift).all_tags
+
+        # Intersect tags_set with the remaining chars
+        text.chars.each { |char|
+          tag_set = tag_set & Photo.where(:char => char).all_tags
+        }
+      else
+         # Populate the tag_set for the first char
+        tag_set = Photo.where(:char => chars.shift).with_all_tags(also_tagged_with).all_tags
+
+        # Intersect tags_set with the remaining chars
+        text.chars.each { |char|
+          tag_set = tag_set & Photo.where(:char => char).with_all_tags(also_tagged_with).all_tags
+        }
+
+        # Finally, filter any tags returned that are already in also_tagged_with
+        tag_set.delete_if {|tag| also_tagged_with.include?(tag)}
+      end
+
+      # # Filter by start_with, if required
+      if !start_with.nil? && !start_with.empty?
+        tag_set.keep_if {|tag| tag.start_with?(start_with) }
+      end
+
+      return tag_set.sort!  # Return sorted tag_set
     end
   end
 
