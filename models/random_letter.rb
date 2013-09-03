@@ -1,6 +1,8 @@
+require_relative 'letter'
+
 # A randomly selected LetterImage and an indication that there might be more available
 class RandomLetter
-  attr_reader :letter_image, :has_more
+  attr_reader :letter, :has_more
 
   # Using Mongo Random Patttern, initialize a RandomLetter for a given a char
   # http://cookbook.mongodb.org/patterns/random-attribute/
@@ -13,14 +15,14 @@ class RandomLetter
     random = Random.rand()
 
     if required_tags.nil? || required_tags.empty?
-      @letter_image = LetterImage.where(:char => char, :random.gte => random).first
-      if photo.nil?
-        @letter_image = LetterImage.where(:char => char, :random.lte => random).first
+      @letter = Letter.where(:char => char, :random.gte => random).first
+      if @letter.nil?
+        @letter = Letter.where(:char => char, :random.lte => random).first
       end
     else
-      @letter_image = LetterImage.with_all_tags(required_tags).where(:char => char, :random.gte => random).first
-      if @letter_image.nil?
-        @letter_image = LetterImage.with_all_tags(required_tags).where(:char => char, :random.lte => random).first
+      @letter = Letter.with_all_tags(required_tags).where(:char => char, :random.gte => random).first
+      if @letter.nil?
+        @letter = Letter.with_all_tags(required_tags).where(:char => char, :random.lte => random).first
       end
     end
 
