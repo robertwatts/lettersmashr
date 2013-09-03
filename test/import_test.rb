@@ -39,7 +39,7 @@ class ImportTest < MiniTest::Unit::TestCase
 
   # Add new photo letter, delete and ensure deletion
   def test_photo_analyzer_exists
-    analyzer = Import::PhotoAnalyzer.new(@test_flickr_photo_exists)
+    analyzer = Importer::PhotoAnalyzer.new(@test_flickr_photo_exists)
     assert analyzer.char == 'a', 'Expecting char a'
     assert analyzer.exists, 'This photo already exists'
     assert !analyzer.import, 'This photo does not need to be imported'
@@ -51,7 +51,7 @@ class ImportTest < MiniTest::Unit::TestCase
   end
 
   def test_photo_analyzer_should_create
-    analyzer = Import::PhotoAnalyzer.new(@test_flickr_photo_new)
+    analyzer = Importer::PhotoAnalyzer.new(@test_flickr_photo_new)
     assert analyzer.char == 'z', 'Expecting char z'
     assert !analyzer.exists, 'This photo should not exist'
     assert analyzer.import, 'This photo needs to be imported'
@@ -63,7 +63,7 @@ class ImportTest < MiniTest::Unit::TestCase
   end
 
   def test_photo_analyzer_should_update
-    analyzer = Import::PhotoAnalyzer.new(@test_flickr_photo_exists_new_date)
+    analyzer = Importer::PhotoAnalyzer.new(@test_flickr_photo_exists_new_date)
     assert analyzer.char == 'a', 'Expecting char a'
     assert analyzer.exists, 'This photo should exist'
     assert analyzer.import, 'This photo needs to be imported'
@@ -75,7 +75,7 @@ class ImportTest < MiniTest::Unit::TestCase
   end
 
    def test_photo_analyzer_should_not_import
-    analyzer = Import::PhotoAnalyzer.new(@test_flickr_photo_new_bad_license)
+    analyzer = Importer::PhotoAnalyzer.new(@test_flickr_photo_new_bad_license)
     assert !analyzer.exists, 'This photo should not exist'
     assert !analyzer.import, 'This photo should not be imported'
     assert !analyzer.delete, 'This photo should not be deleted'
@@ -84,7 +84,7 @@ class ImportTest < MiniTest::Unit::TestCase
   end
 
   def test_photo_analyzer_should_delete_changed_license
-    analyzer = Import::PhotoAnalyzer.new(@test_flickr_photo_exists_changed_license)
+    analyzer = Importer::PhotoAnalyzer.new(@test_flickr_photo_exists_changed_license)
     assert analyzer.delete, 'This photo should be deleted'
     assert !analyzer.import, 'This photo should not be imported'
     assert analyzer.exists, 'This photo should exist'

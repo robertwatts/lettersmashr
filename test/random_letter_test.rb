@@ -42,7 +42,7 @@ class RandomLetterTest < MiniTest::Unit::TestCase
 
     pl_a = RandomLetter.new('a', ['tag3']) # Make sure we get the 2nd a
     assert !pl_a.letter.nil? , 'Cannot be nil'
-    assert pl_a.letter.id == @test_letter_data2[:flickr_id], 'We expect the second A photoLetter'
+    assert pl_a.letter.id == 2, 'We expect the second A photoLetter'
 
     
   end
