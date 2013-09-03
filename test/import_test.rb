@@ -1,5 +1,5 @@
 require_relative 'test_helper'
-require_relative '../import'
+require_relative '../tools/importer'
   
 MockPhoto = Struct.new(:id, :license, :lastupdate, :owner, :url_sq, :url_t, :url_s, :url_q, :tags)
 

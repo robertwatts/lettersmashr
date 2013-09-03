@@ -1,74 +1,39 @@
 require 'mongoid'
 require 'resque/errors'
-require 'flickraw'
-require_relative 'models/letter'
+require_relative '../models/letter'
 
 # Manages access to Importer API
-class Import
+class Importer
   extend Resque::Plugins::ConcurrentRestriction
   concurrent 1  # Only allow Import to have one worker
+
+  # Set up redis keys to track import runs over time
+  @@redis_all_time_count = "all_time_run_count"
+  @@redis_all_time_created = "all_time_created"
+  @@redis_all_time_modified = "all_time_modified"
+  @@redis_all_time_deleted = "all_time_deleted"
+  @@redis_most_recent_started = "most_recent_started"
+  @@redis_most_recent_success = "most_recent_success"
+  @@redis_most_recent_duration = "most_recent_duration"
+  @@redis_most_recent_created = "most_recent_created"
+  @@redis_most_recent_modified = "most_recent_modified"
+  @@redis_most_recent_deleted = "most_recent_deleted"
 
   @queue = :import
 
   # Add a new Letter::Photo to the store
-  def initialize
-
-    # Setup and authenticate FlickrAPI using FlickrRaw
-    FlickRaw.api_key = ENV['FLICKR_APP_KEY']
-    FlickRaw.shared_secret = ENV['FLICKR_SHARED_SECRET']
-    flickr.access_token = ENV['FLICKR_TOKEN']
-    flickr.access_secret = ENV['FLICKR_SECRET']
-    puts "You are now authenticated as #{flickr.test.login.username}"
-
-    # Find the "One Letter" group from the Flickr API user's group pool list
-    available_group_pools = flickr.groups.pools.getGroups
-
-    @letter_pool = nil
-    available_group_pools.each { |group|
-      if group.name == 'One Letter'
-        @letter_pool = group
-        puts 'Initialized One Letter Group Pool'
-        break
-      end
-    }
-
-    # Abort if not found
-    abort('Unable to find One Letter group, exiting') if @letter_pool.nil?
-
-    # Set up redis keys to track import runs over time
-    @redis_all_time_count = "all_time_run_count"
-    @redis_all_time_created = "all_time_created"
-    @redis_all_time_modified = "all_time_modified"
-    @redis_all_time_deleted = "all_time_deleted"
-    @redis_most_recent_started = "most_recent_started"
-    @redis_most_recent_success = "most_recent_success"
-    @redis_most_recent_duration = "most_recent_duration"
-    @redis_most_recent_created = "most_recent_created"
-    @redis_most_recent_modified = "most_recent_modified"
-    @redis_most_recent_deleted = "most_recent_deleted"
-
+  def initialize(photo_collector)
+    @photo_collector = photo_collector
     puts "Successfully initialized import worker instance"
   end
 
   # Resque execution method
   def self.perform
-      (new).import
+    (new(@photo_collector.new)).import
   rescue Resque::TermException
-      Resque.enqueue(self)
+    Resque.enqueue(self)
   end
 
-  
-
-  ## 
-  # Has the given Letter::Photo got a date older than the given date?
-  # @param photo_letter_id [Integer] the photo letter id
-  # @param date the new photo_letter date
-  # @return boolean if stored date is older than given date
-  def modified?(photo_letter_id, date)
-    Photo.where(:_id => photo_letter_id, :flickr_last_update.lt => date).exists?
-  end
-
-  ##
   # Class method to import Letter::Photo
   def import
     # Set up variables for new import record
@@ -78,26 +43,23 @@ class Import
     import_modified = 0
     import_deleted = 0
 
-    page_count = @letter_pool.photos.to_i / 100 + 1
+    page_count = @photo_collector.photo_count
     begin
       # Analyze every photo in the pool, only importing what is required
       1.upto(page_count) do |page|
         puts "Processing page #{page} of #{page_count}"
 
-        flickr.groups.pools.getPhotos(
-            :group_id => @letter_pool.nsid, per_page: 100,
-            :page => page,
-            :extras=> 'last_update,tags,license,url_sq,url_t,url_s').each do |photo|
-
+        @photo_collector.get_photos().each do |photo|
+        
           # Create a PhotoAnalyzer object from the Flickr photo
           analyzer = PhotoAnalyzer.new(photo)
 
           if analyzer.delete      # Delete photo
-            LetterImage.delete_all(:_id => photo.id)
+            Letter.delete_all(:_id => photo.id)
             import_deleted += 1
             puts "Deleted photo #{photo.id}"
           elsif analyzer.import   # Save the photo (create or update)
-            LetterImage.new(
+            Letter.new(
                 char: analyzer.char,
                 tags: analyzer.tags,
                 flickr_id: photo.id,
@@ -126,21 +88,21 @@ class Import
       import_end = Time.now
 
       # Set all time stats
-      Resque.redis.incr @redis_all_time_count
-      Resque.redis.incrby @redis_all_time_created, import_created
-      Resque.redis.incrby @redis_all_time_modified, import_modified
-      Resque.redis.incrby @redis_all_time_deleted, import_deleted
+      Resque.redis.incr @@redis_all_time_count
+      Resque.redis.incrby @@redis_all_time_created, import_created
+      Resque.redis.incrby @@redis_all_time_modified, import_modified
+      Resque.redis.incrby @@redis_all_time_deleted, import_deleted
 
       # Set most recent stats
-      Resque.redis.set @redis_most_recent_duration,  import_end - import_begin
-      Resque.redis.set @redis_most_recent_started, import_created
-      Resque.redis.set @redis_most_recent_modified, import_modified
-      Resque.redis.set @redis_most_recent_deleted, import_deleted
-      Resque.redis.set @redis_most_recent_started, import_begin
+      Resque.redis.set @@redis_most_recent_duration,  import_end - import_begin
+      Resque.redis.set @@redis_most_recent_started, import_created
+      Resque.redis.set @@redis_most_recent_modified, import_modified
+      Resque.redis.set @@redis_most_recent_deleted, import_deleted
+      Resque.redis.set @@redis_most_recent_started, import_begin
 
       # Set most recent success date, if applicable
       if import_success
-        Resque.redis.set @redis_most_recent_success, import_begin
+        Resque.redis.set @@redis_most_recent_success, import_begin
       end
     end
   end
@@ -187,7 +149,7 @@ class Import
 
     class << self
       # Load the list of Flickr tags to ignore on import
-      @@tag_ignore_list = File.read(File.dirname(__FILE__) + '/config/tag_ignore_list').split(' ')
+      @@tag_ignore_list = File.read(File.dirname(__FILE__) + '/../config/tag_ignore_list').split(' ')
       puts "Ignore list: #{@@tag_ignore_list}"
     end
 

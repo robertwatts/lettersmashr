@@ -5,7 +5,7 @@ require 'slim'
 require 'json'
 
 require_relative 'models/letter'
-require_relative 'import'
+require_relative 'tools/importer'
 
 configure do
   puts 'Initializing Mongoid ' + ENV['RACK_ENV']
