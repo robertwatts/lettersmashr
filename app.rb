@@ -1,11 +1,11 @@
 require 'bundler'
 Bundler.require(:default)
-require File.expand_path('../lib/import', __FILE__)
-require File.expand_path('../lib/letter', __FILE__)
-require File.expand_path('../lib/smash', __FILE__)
 require 'resque_scheduler'
 require 'slim'
 require 'json'
+
+require_relative 'models/letter'
+require_relative 'import'
 
 configure do
   puts 'Initializing Mongoid ' + ENV['RACK_ENV']
@@ -82,16 +82,23 @@ get '/api/v1/image/:smashed_image_id' do
   }.to_json
 end
 
-# Return a single random photo for a given letter
-get '/api/v1/random_letter_photo/:letter' do
+
+get '/api/v1/smash_letters/:letter' do
   content_type :json
-  Letter.random(params['letter'], params['tags']).to_json
+  SmashedLetters.new(params['letter'], params['tags']).to_json
+end
+
+
+# Return a single random photo for a given letter
+get '/api/v1/random_letter/:letter' do
+  content_type :json
+  RandomLetter.new(params['letter'], params['tags'], params['excluded_ids']).to_json
 end
 
 # Generate a list of tags available for the supplied letters and required tags
 get '/api/v1/tags' do
   content_type :json
-  Letter.tag_list(params['text'], params['also_tagged_with'], params['start_with']).to_json
+  TagList.new(params['text'], params['also_tagged_with'], params['start_with']).to_json
 end
 
 get '/import' do
@@ -99,32 +106,32 @@ get '/import' do
 end
 
 get '/stats' do
-  slim :stats, locals: { :letterPhotoTotalCount => Letter::Photo.count,
-    :aLetterPhotoCount => Letter::Photo.where(:char => 'a').count,
-    :bLetterPhotoCount => Letter::Photo.where(:char => 'b').count,
-    :cLetterPhotoCount => Letter::Photo.where(:char => 'c').count,
-    :dLetterPhotoCount => Letter::Photo.where(:char => 'd').count,
-    :eLetterPhotoCount => Letter::Photo.where(:char => 'e').count,
-    :fLetterPhotoCount => Letter::Photo.where(:char => 'f').count,
-    :gLetterPhotoCount => Letter::Photo.where(:char => 'g').count,
-    :hLetterPhotoCount => Letter::Photo.where(:char => 'h').count,
-    :iLetterPhotoCount => Letter::Photo.where(:char => 'i').count,
-    :jLetterPhotoCount => Letter::Photo.where(:char => 'j').count,
-    :kLetterPhotoCount => Letter::Photo.where(:char => 'k').count,
-    :lLetterPhotoCount => Letter::Photo.where(:char => 'l').count,
-    :mLetterPhotoCount => Letter::Photo.where(:char => 'm').count,
-    :nLetterPhotoCount => Letter::Photo.where(:char => 'n').count,
-    :oLetterPhotoCount => Letter::Photo.where(:char => 'o').count,
-    :pLetterPhotoCount => Letter::Photo.where(:char => 'p').count,
-    :qLetterPhotoCount => Letter::Photo.where(:char => 'q').count,
-    :rLetterPhotoCount => Letter::Photo.where(:char => 'r').count,
-    :sLetterPhotoCount => Letter::Photo.where(:char => 's').count,
-    :tLetterPhotoCount => Letter::Photo.where(:char => 't').count,
-    :uLetterPhotoCount => Letter::Photo.where(:char => 'u').count,
-    :vLetterPhotoCount => Letter::Photo.where(:char => 'v').count,
-    :xLetterPhotoCount => Letter::Photo.where(:char => 'x').count,
-    :yLetterPhotoCount => Letter::Photo.where(:char => 'y').count,
-    :zLetterPhotoCount => Letter::Photo.where(:char => 'z').count,
+  slim :stats, locals: { :letterPhotoTotalCount => LetterImage.count,
+    :aLetterPhotoCount => LetterImage.where(:char => 'a').count,
+    :bLetterPhotoCount => LetterImage.where(:char => 'b').count,
+    :cLetterPhotoCount => LetterImage.where(:char => 'c').count,
+    :dLetterPhotoCount => LetterImage.where(:char => 'd').count,
+    :eLetterPhotoCount => LetterImage.where(:char => 'e').count,
+    :fLetterPhotoCount => LetterImage.where(:char => 'f').count,
+    :gLetterPhotoCount => LetterImage.where(:char => 'g').count,
+    :hLetterPhotoCount => LetterImage.where(:char => 'h').count,
+    :iLetterPhotoCount => LetterImage.where(:char => 'i').count,
+    :jLetterPhotoCount => LetterImage.where(:char => 'j').count,
+    :kLetterPhotoCount => LetterImage.where(:char => 'k').count,
+    :lLetterPhotoCount => LetterImage.where(:char => 'l').count,
+    :mLetterPhotoCount => LetterImage.where(:char => 'm').count,
+    :nLetterPhotoCount => LetterImage.where(:char => 'n').count,
+    :oLetterPhotoCount => LetterImage.where(:char => 'o').count,
+    :pLetterPhotoCount => LetterImage.where(:char => 'p').count,
+    :qLetterPhotoCount => LetterImage.where(:char => 'q').count,
+    :rLetterPhotoCount => LetterImage.where(:char => 'r').count,
+    :sLetterPhotoCount => LetterImage.where(:char => 's').count,
+    :tLetterPhotoCount => LetterImage.where(:char => 't').count,
+    :uLetterPhotoCount => LetterImage.where(:char => 'u').count,
+    :vLetterPhotoCount => LetterImage.where(:char => 'v').count,
+    :xLetterPhotoCount => LetterImage.where(:char => 'x').count,
+    :yLetterPhotoCount => LetterImage.where(:char => 'y').count,
+    :zLetterPhotoCount => LetterImage.where(:char => 'z').count,
   }
 end
 

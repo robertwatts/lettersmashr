@@ -4,3 +4,5 @@
 .env.production
 .env.test
 .rvmrc
+*.sublime-project
+*.sublime-workspace

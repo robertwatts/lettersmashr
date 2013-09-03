@@ -1,6 +1,7 @@
+require 'mongoid'
 require 'resque/errors'
 require 'flickraw'
-require File.expand_path('../letter', __FILE__)
+require_relative 'models/letter'
 
 # Manages access to Importer API
 class Import
@@ -56,6 +57,18 @@ class Import
       Resque.enqueue(self)
   end
 
+  
+
+  ## 
+  # Has the given Letter::Photo got a date older than the given date?
+  # @param photo_letter_id [Integer] the photo letter id
+  # @param date the new photo_letter date
+  # @return boolean if stored date is older than given date
+  def modified?(photo_letter_id, date)
+    Photo.where(:_id => photo_letter_id, :flickr_last_update.lt => date).exists?
+  end
+
+  ##
   # Class method to import Letter::Photo
   def import
     # Set up variables for new import record
@@ -80,11 +93,11 @@ class Import
           analyzer = PhotoAnalyzer.new(photo)
 
           if analyzer.delete      # Delete photo
-            Letter.delete(photo.id)
+            LetterImage.delete_all(:_id => photo.id)
             import_deleted += 1
             puts "Deleted photo #{photo.id}"
           elsif analyzer.import   # Save the photo (create or update)
-            Letter.save(
+            LetterImage.new(
                 char: analyzer.char,
                 tags: analyzer.tags,
                 flickr_id: photo.id,
@@ -95,7 +108,7 @@ class Import
                 flickr_url_t: defined?(photo.url_t) ? photo.url_t : nil,
                 flickr_url_s: defined?(photo.url_s) ? photo.url_s : nil,
                 flickr_url_q: defined?(photo.url_q) ? photo.url_q : nil
-            )
+            ).upsert
 
             if analyzer.exists
               import_modified += 1
@@ -174,14 +187,14 @@ class Import
 
     class << self
       # Load the list of Flickr tags to ignore on import
-      @@tag_ignore_list = File.read(File.dirname(__FILE__) + '/../config/tag_ignore_list').split(' ')
+      @@tag_ignore_list = File.read(File.dirname(__FILE__) + '/config/tag_ignore_list').split(' ')
       puts "Ignore list: #{@@tag_ignore_list}"
     end
 
     # Construct with a flickraw photo object
     def initialize(photo)
       @valid_license = photo.license.to_i.between?(1,2) || photo.license.to_i.between?(4,5) || photo.license.to_i > 6
-      @exists = Letter.exists?(photo.id)
+      @exists = Letter.where(:_id => photo.id).exists?
 
       if @valid_license
         # Process if valid license
@@ -196,7 +209,7 @@ class Import
           end
         end
 
-        @import = !@char.nil? && (!@exists || Letter.modified?(photo.id, Time.at(photo.lastupdate.to_i).to_datetime))
+        @import = !@char.nil? && (!@exists || Letter.where(:_id => photo.id, :flickr_last_update.lt => Time.at(photo.lastupdate.to_i).to_datetime).exists?)
         @delete = false
       else
         # Delete if license is not valid

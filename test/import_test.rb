@@ -1,13 +1,12 @@
-require File.dirname(__FILE__) +  '/test_helper'
-require File.dirname(__FILE__) +  '/../lib/import'
-require File.dirname(__FILE__) +  '/../lib/letter'
-
+require_relative 'test_helper'
+require_relative '../import'
+  
 MockPhoto = Struct.new(:id, :license, :lastupdate, :owner, :url_sq, :url_t, :url_s, :url_q, :tags)
 
 class ImportTest < MiniTest::Unit::TestCase
 
  def setup
-  create_test_photo_data() #see test_helper.rb
+  create_test_data() #see test_helper.rb
 
   @test_flickr_photo_exists = MockPhoto.new(
     1, 1, DateTime.parse('2013-03-20 21:49:10 -0400').to_i, 'owner1',  'http://www.yahoo.com', 'http://www.yahoo.com', 'http://www.yahoo.com', nil,
@@ -31,7 +30,7 @@ class ImportTest < MiniTest::Unit::TestCase
   end
 
   def teardown
-    delete_test_photo_data()
+    delete_test_data()
   end
 
   def test_parse_flickr_date
