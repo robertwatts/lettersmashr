@@ -6,3 +6,8 @@
 .rvmrc
 *.sublime-project
 *.sublime-workspace
+.idea/
+node_modules
+.DS_Store
+coverage
+*.log
